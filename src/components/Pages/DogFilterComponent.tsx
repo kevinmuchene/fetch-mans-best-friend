@@ -19,7 +19,7 @@ const items = [
 function DogFilterComponent() {
   const [breeds] = useFetchBreeds();
 
-  console.log(breeds);
+  // console.log(breeds);
 
   const formik = useFormik({
     initialValues: {
@@ -43,6 +43,8 @@ function DogFilterComponent() {
       resetForm();
     },
   });
+
+  const fetchFilteredDogData = (values) => {};
 
   return (
     <Paper sx={{ width: "100%", mb: 2 }}>
@@ -90,7 +92,7 @@ function DogFilterComponent() {
               setSelectedItems={(field, value) =>
                 formik.setFieldValue(field, value)
               }
-              items={items}
+              items={breeds}
               label={"Breed"}
             />
           </Grid>

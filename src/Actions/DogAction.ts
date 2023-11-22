@@ -6,4 +6,9 @@ export default class DogAction {
       return res.data || {};
     });
   }
+  static async searchDogs() {
+    return dogService.searchDogs().then((res) => {
+      return res.data || {};
+    });
+  }
 }

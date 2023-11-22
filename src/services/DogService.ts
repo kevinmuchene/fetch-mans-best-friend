@@ -5,4 +5,8 @@ export default class DogService {
   static fetchBreed = () => {
     return defaultRestApi.get(APIs.fetchBreeds());
   };
+
+  static searchDogs = () => {
+    return defaultRestApi.get(APIs.searchDogs());
+  };
 }

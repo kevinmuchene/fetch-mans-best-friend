@@ -8,11 +8,7 @@ const defaultRestApi = axios.create(defautRequestConfig);
 
 defaultRestApi.interceptors.request.use(
   function (config) {
-    config.params = {
-      //   locale: "en_US",
-      //   '_': new Date().getTime(),
-      withCredentials: true,
-    };
+    config.withCredentials = true;
     return config;
   },
   function (error) {

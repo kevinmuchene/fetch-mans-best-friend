@@ -7,8 +7,10 @@ export const useFetchBreeds = () => {
   useEffect(() => {
     dogAction
       .fetchBreed()
-      .then((res) => console.log(res))
+      .then((res) => setBreeds(res))
       .catch((err) => console.log(err));
+
+    console.log("request is made");
   }, []);
 
   return [breeds];
