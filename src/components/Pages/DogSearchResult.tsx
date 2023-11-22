@@ -15,10 +15,10 @@ import Paper from "@mui/material/Paper";
 import Checkbox from "@mui/material/Checkbox";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
-import DeleteIcon from "@mui/icons-material/Delete";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import { visuallyHidden } from "@mui/utils";
+import { useNavigate } from "react-router-dom";
 
 interface Dog {
   id: string;
@@ -196,7 +196,7 @@ interface EnhancedTableToolbarProps {
 
 function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   const { numSelected } = props;
-
+  const navigate = useNavigate();
   return (
     <Toolbar
       sx={{
@@ -232,7 +232,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
       )}
       {numSelected > 0 ? (
         // <Tooltip title="favs">
-        <Button>Match</Button>
+        <Button onClick={() => navigate("/favoritedogs")}>Match</Button>
       ) : (
         // </Tooltip>
         <Tooltip title="Filter list">
@@ -249,6 +249,8 @@ export default function DogSearchResult() {
   const [orderBy, setOrderBy] = useState<keyof Dog>("breed");
   const [selected, setSelected] = useState<readonly number[]>([]);
   const [page, setPage] = useState(0);
+
+  const navigate = useNavigate();
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -394,7 +396,9 @@ export default function DogSearchResult() {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
-      <Button variant="contained">Match Your Fav Dogs</Button>
+      <Button variant="contained" onClick={() => navigate("/favoritedogs")}>
+        Match My Fav Dogs
+      </Button>
     </Box>
   );
 }

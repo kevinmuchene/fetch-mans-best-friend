@@ -4,8 +4,11 @@ import Grid from "@mui/material/Grid";
 import { Box, Typography } from "@mui/material";
 import Container from "@mui/material/Container";
 import { useFormik } from "formik";
+import { useNavigate } from "react-router-dom";
 
 const SignIn = function SiginCard() {
+  const navigate = useNavigate();
+
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -15,6 +18,7 @@ const SignIn = function SiginCard() {
     onSubmit: (values, { resetForm }) => {
       console.log(values);
       resetForm();
+      navigate("/dogs");
     },
   });
 

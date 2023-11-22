@@ -30,7 +30,7 @@ function DogFilterComponent() {
     <Paper sx={{ width: "100%", mb: 2 }}>
       <Box sx={{ mt: 1 }}>
         <Typography color="orange" align="center" variant="h4">
-          Refine Your Search
+          Search By ...
         </Typography>
       </Box>
       <Box

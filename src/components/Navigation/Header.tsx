@@ -14,7 +14,11 @@ export default function Header() {
         position="static"
         color="transparent"
         style={{ border: "2px groove orange" }}
-        sx={{ justifyContent: "space-around", padding: "0.4em" }}
+        sx={{
+          justifyContent: "space-around",
+          padding: "0.4em",
+          marginBottom: 4,
+        }}
       >
         <Toolbar>
           <Hidden mdDown>
