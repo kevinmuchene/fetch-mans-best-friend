@@ -1,6 +1,6 @@
-import * as React from "react";
+import React, { useState } from "react";
 import { alpha } from "@mui/material/styles";
-import Box from "@mui/material/Box";
+import { Box, Button } from "@mui/material";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -16,50 +16,43 @@ import Checkbox from "@mui/material/Checkbox";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import DeleteIcon from "@mui/icons-material/Delete";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import { visuallyHidden } from "@mui/utils";
 
-interface Data {
-  id: number;
-  calories: number;
-  carbs: number;
-  fat: number;
+interface Dog {
+  id: string;
+  img: string;
   name: string;
-  protein: number;
+  age: number;
+  zip_code: string;
+  breed: string;
 }
 
 function createData(
-  id: number,
+  id: string,
+  img: string,
   name: string,
-  calories: number,
-  fat: number,
-  carbs: number,
-  protein: number
-): Data {
+  age: number,
+  zip_code: string,
+  breed: string
+): Dog {
   return {
     id,
+    img,
     name,
-    calories,
-    fat,
-    carbs,
-    protein,
+    age,
+    zip_code,
+    breed,
   };
 }
 
 const rows = [
-  createData(1, "Cupcake", 305, 3.7, 67, 4.3),
-  createData(2, "Donut", 452, 25.0, 51, 4.9),
-  createData(3, "Eclair", 262, 16.0, 24, 6.0),
-  createData(4, "Frozen yoghurt", 159, 6.0, 24, 4.0),
-  createData(5, "Gingerbread", 356, 16.0, 49, 3.9),
-  createData(6, "Honeycomb", 408, 3.2, 87, 6.5),
-  createData(7, "Ice cream sandwich", 237, 9.0, 37, 4.3),
-  createData(8, "Jelly Bean", 375, 0.0, 94, 0.0),
-  createData(9, "KitKat", 518, 26.0, 65, 7.0),
-  createData(10, "Lollipop", 392, 0.2, 98, 0.0),
-  createData(11, "Marshmallow", 318, 0, 81, 2.0),
-  createData(12, "Nougat", 360, 19.0, 9, 37.0),
-  createData(13, "Oreo", 437, 18.0, 63, 4.0),
+  createData("1", "image1", "African Hound", 12, "52557", "Hound"),
+  createData("2", "image2", "Asian Hound", 18, "59874", "Asian"),
+  createData("3", "image3", "German Sherphed", 30, "12876", "German"),
+  createData("4", "image3", "Alaska Sherphed", 30, "12876", "German"),
+  createData("ke", "image3", "Ke Sherphed", 30, "12876", "German"),
 ];
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
@@ -103,7 +96,7 @@ function stableSort<T>(
 
 interface HeadCell {
   disablePadding: boolean;
-  id: keyof Data;
+  id: keyof Dog;
   label: string;
   numeric: boolean;
 }
@@ -113,31 +106,31 @@ const headCells: readonly HeadCell[] = [
     id: "name",
     numeric: false,
     disablePadding: true,
-    label: "Dessert (100g serving)",
+    label: "Dog Name",
   },
   {
-    id: "calories",
+    id: "img",
     numeric: true,
     disablePadding: false,
-    label: "age",
+    label: "Picture",
   },
   {
-    id: "fat",
+    id: "age",
     numeric: true,
     disablePadding: false,
-    label: "Fat (g)",
+    label: "Age",
   },
   {
-    id: "carbs",
+    id: "zip_code",
     numeric: true,
     disablePadding: false,
-    label: "Carbs (g)",
+    label: "Zip_Code",
   },
   {
-    id: "protein",
+    id: "breed",
     numeric: true,
     disablePadding: false,
-    label: "Protein (g)",
+    label: "Breed",
   },
 ];
 
@@ -145,7 +138,7 @@ interface EnhancedTableProps {
   numSelected: number;
   onRequestSort: (
     event: React.MouseEvent<unknown>,
-    property: keyof Data
+    property: keyof Dog
   ) => void;
   onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
   order: Order;
@@ -163,24 +156,14 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     onRequestSort,
   } = props;
   const createSortHandler =
-    (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
+    (property: keyof Dog) => (event: React.MouseEvent<unknown>) => {
       onRequestSort(event, property);
     };
 
   return (
     <TableHead>
       <TableRow>
-        <TableCell padding="checkbox">
-          <Checkbox
-            color="primary"
-            indeterminate={numSelected > 0 && numSelected < rowCount}
-            checked={rowCount > 0 && numSelected === rowCount}
-            onChange={onSelectAllClick}
-            inputProps={{
-              "aria-label": "select all desserts",
-            }}
-          />
-        </TableCell>
+        <TableCell padding="checkbox"></TableCell>
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
@@ -235,7 +218,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
           variant="subtitle1"
           component="div"
         >
-          {numSelected} selected
+          {numSelected} Favorite
         </Typography>
       ) : (
         <Typography
@@ -244,16 +227,14 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
           id="tableTitle"
           component="div"
         >
-          Nutrition
+          Dogs
         </Typography>
       )}
       {numSelected > 0 ? (
-        <Tooltip title="Delete">
-          <IconButton>
-            <DeleteIcon />
-          </IconButton>
-        </Tooltip>
+        // <Tooltip title="favs">
+        <Button>Match</Button>
       ) : (
+        // </Tooltip>
         <Tooltip title="Filter list">
           <IconButton>
             <FilterListIcon />
@@ -263,17 +244,17 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
     </Toolbar>
   );
 }
-export default function DogDataTableEnhancedTable() {
-  const [order, setOrder] = React.useState<Order>("asc");
-  const [orderBy, setOrderBy] = React.useState<keyof Data>("calories");
-  const [selected, setSelected] = React.useState<readonly number[]>([]);
-  const [page, setPage] = React.useState(0);
+export default function DogSearchResult() {
+  const [order, setOrder] = useState<Order>("asc");
+  const [orderBy, setOrderBy] = useState<keyof Dog>("breed");
+  const [selected, setSelected] = useState<readonly number[]>([]);
+  const [page, setPage] = useState(0);
 
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
-    property: keyof Data
+    property: keyof Dog
   ) => {
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
@@ -306,6 +287,7 @@ export default function DogDataTableEnhancedTable() {
       );
     }
     setSelected(newSelected);
+    console.log(newSelected);
   };
 
   const handleChangePage = (event: unknown, newPage: number) => {
@@ -334,7 +316,7 @@ export default function DogDataTableEnhancedTable() {
   );
 
   return (
-    <Box sx={{ width: "100%" }}>
+    <Box sx={{ width: "100%", mt: 4 }}>
       <Paper sx={{ width: "100%", mb: 2 }}>
         <EnhancedTableToolbar numSelected={selected.length} />
         <TableContainer>
@@ -363,13 +345,14 @@ export default function DogDataTableEnhancedTable() {
                     selected={isItemSelected}
                     sx={{ cursor: "pointer" }}
                   >
-                    <TableCell padding="checkbox">
+                    <TableCell>
                       <Checkbox
                         color="primary"
                         checked={isItemSelected}
                         inputProps={{
                           "aria-labelledby": labelId,
                         }}
+                        icon={<FavoriteBorderIcon />}
                       />
                     </TableCell>
                     <TableCell
@@ -380,10 +363,12 @@ export default function DogDataTableEnhancedTable() {
                     >
                       {row.name}
                     </TableCell>
-                    <TableCell align="right">{row.calories}</TableCell>
-                    <TableCell align="right">{row.fat}</TableCell>
-                    <TableCell align="right">{row.carbs}</TableCell>
-                    <TableCell align="right">{row.protein}</TableCell>
+                    {/* img, name, age, zip_code, breed, */}
+                    <TableCell align="right">{row.img}</TableCell>
+
+                    <TableCell align="right">{row.age}</TableCell>
+                    <TableCell align="right">{row.zip_code}</TableCell>
+                    <TableCell align="right">{row.breed}</TableCell>
                   </TableRow>
                 );
               })}
@@ -409,6 +394,7 @@ export default function DogDataTableEnhancedTable() {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
+      <Button variant="contained">Match Your Fav Dogs</Button>
     </Box>
   );
 }

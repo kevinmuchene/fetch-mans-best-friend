@@ -1,6 +1,9 @@
 import Login from "./components/Signin";
 import Header from "./components/Navigation/Header";
-import DogDataTableEnhancedTable from "./components/Pages/DogData";
+import DogSearchResult from "./components/Pages/DogSearchResult";
+import DogSearch from "./components/Pages/DogFilterComponent";
+import SearchPage from "./components/Pages/SearchPage";
+import FavDogsComponent from "./components/Pages/FavDogsComponent";
 
 function App() {
   return (
@@ -8,7 +11,13 @@ function App() {
       {/* <Header />
       <Login /> */}
 
-      <DogDataTableEnhancedTable />
+      {/* <DogSearchResult /> */}
+
+      {/* <DogSearch /> */}
+
+      {/* <SearchPage /> */}
+
+      <FavDogsComponent />
     </>
   );
 }
