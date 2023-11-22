@@ -1,10 +1,21 @@
 import { TextField, Button, Box, Grid, Typography, Paper } from "@mui/material";
 import { useFormik } from "formik";
-import SelectBreedComponent from "../SelectBreedComponent";
-import React from "react";
+import SelectBreedComponent from "../MultiSelectChipComponent";
+
+const items = [
+  "Oliver Hansen",
+  "Van Henry",
+  "April Tucker",
+  "Ralph Hubbard",
+  "Omar Alexander",
+  "Carlos Abbott",
+  "Miriam Wagner",
+  "Bradley Wilkerson",
+  "Virginia Andrews",
+  "Kelly Snyder",
+];
 
 function DogFilterComponent() {
-  const [selectedBreeds, setSelectedBreeds] = React.useState<string[]>([]);
   const formik = useFormik({
     initialValues: {
       breeds: [],
@@ -14,13 +25,12 @@ function DogFilterComponent() {
     },
 
     onSubmit: (values, { resetForm }) => {
-      // const breedsArray = values.breeds.split(",").map((breed) => breed.trim());
       const zipcodesArray = values.zipCodes
         .split(",")
         .map((zipcode) => zipcode.trim());
       const finalValues = {
         ...values,
-        // breeds: breedsArray,
+
         zipCodes: zipcodesArray,
       };
 
@@ -44,25 +54,6 @@ function DogFilterComponent() {
       >
         <Grid container spacing={2}>
           <Grid item xs={12} md={6}>
-            <SelectBreedComponent
-              breed={formik.values.breeds}
-              setBreed={(field, value) => formik.setFieldValue(field, value)}
-            />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <TextField
-              fullWidth
-              color="warning"
-              name="zipCodes"
-              label="Enter zipcodes seprated by comma"
-              id="zipCodes"
-              autoComplete="zipCodes"
-              value={formik.values.zipCodes}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-            />
-          </Grid>
-          <Grid item xs={12} md={6}>
             <TextField
               fullWidth
               color="warning"
@@ -84,6 +75,30 @@ function DogFilterComponent() {
               id="ageMax"
               autoComplete="ageMax"
               value={formik.values.ageMax}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+            />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <SelectBreedComponent
+              selectedItems={formik.values.breeds}
+              setSelectedItems={(field, value) =>
+                formik.setFieldValue(field, value)
+              }
+              items={items}
+              label={"Breed"}
+            />
+          </Grid>
+
+          <Grid item xs={12} md={6}>
+            <TextField
+              fullWidth
+              color="warning"
+              name="zipCodes"
+              label="Enter zipcode/zipcodes seprated by comma"
+              id="zipCodes"
+              autoComplete="zipCodes"
+              value={formik.values.zipCodes}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
             />
