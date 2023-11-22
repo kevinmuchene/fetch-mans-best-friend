@@ -1,6 +1,7 @@
 import { TextField, Button, Box, Grid, Typography, Paper } from "@mui/material";
 import { useFormik } from "formik";
 import SelectBreedComponent from "../MultiSelectChipComponent";
+import { useFetchBreeds } from "../fetchData/useFetchBreeds";
 
 const items = [
   "Oliver Hansen",
@@ -16,6 +17,10 @@ const items = [
 ];
 
 function DogFilterComponent() {
+  const [breeds] = useFetchBreeds();
+
+  console.log(breeds);
+
   const formik = useFormik({
     initialValues: {
       breeds: [],

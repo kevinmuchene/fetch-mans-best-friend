@@ -30,7 +30,7 @@ export default function MultiSelectChipComponent({
   return (
     <div>
       <FormControl sx={{ width: "100%" }} size="medium">
-        <InputLabel id="multiple-chip-label">Select {label}</InputLabel>
+        <InputLabel id="multiple-chip-label">{label}</InputLabel>
         <Select
           labelId="multiple-chip-label"
           id="multiple-chip"

@@ -2,6 +2,7 @@ const apiMainURL = "https://frontend-take-home-service.fetch.com";
 
 const authLogInService = "/auth/login";
 const authLogOutService = "/auth/logout";
+const fetchBreeds = "/dogs/breeds";
 
 const APIs = {
   getAuthCookie: function () {
@@ -9,6 +10,9 @@ const APIs = {
   },
   logoutAPI: function () {
     return `${apiMainURL}${authLogOutService}`;
+  },
+  fetchBreeds: function () {
+    return `${apiMainURL}${fetchBreeds}`;
   },
 };
 
