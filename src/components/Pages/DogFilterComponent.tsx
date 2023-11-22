@@ -1,23 +1,26 @@
 import { TextField, Button, Box, Grid, Typography, Paper } from "@mui/material";
 import { useFormik } from "formik";
+import SelectBreedComponent from "../SelectBreedComponent";
+import React from "react";
 
 function DogFilterComponent() {
+  const [selectedBreeds, setSelectedBreeds] = React.useState<string[]>([]);
   const formik = useFormik({
     initialValues: {
-      breeds: "",
+      breeds: [],
       zipCodes: "",
       ageMin: "",
       ageMax: "",
     },
 
     onSubmit: (values, { resetForm }) => {
-      const breedsArray = values.breeds.split(",").map((breed) => breed.trim());
+      // const breedsArray = values.breeds.split(",").map((breed) => breed.trim());
       const zipcodesArray = values.zipCodes
         .split(",")
         .map((zipcode) => zipcode.trim());
       const finalValues = {
         ...values,
-        breeds: breedsArray,
+        // breeds: breedsArray,
         zipCodes: zipcodesArray,
       };
 
@@ -41,16 +44,9 @@ function DogFilterComponent() {
       >
         <Grid container spacing={2}>
           <Grid item xs={12} md={6}>
-            <TextField
-              fullWidth
-              color="primary"
-              id="breeds"
-              label="Enter breeds seprated by comma"
-              name="breeds"
-              autoComplete="breeds"
-              value={formik.values.breeds}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
+            <SelectBreedComponent
+              breed={formik.values.breeds}
+              setBreed={(field, value) => formik.setFieldValue(field, value)}
             />
           </Grid>
           <Grid item xs={12} md={6}>

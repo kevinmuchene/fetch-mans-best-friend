@@ -6,8 +6,19 @@ import Button from "@mui/material/Button";
 import dog from "../../assets/manbestfriend.jpg";
 import { Hidden } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
+import authService from "../../services/AuthService";
 
 export default function Header() {
+  const signOutUser = () => {
+    authService
+      .signout()
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log("Error in signing out user" + err);
+      });
+  };
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar
@@ -52,6 +63,7 @@ export default function Header() {
               endIcon={<LogoutIcon color="warning" />}
               size="small"
               color="inherit"
+              onClick={signOutUser}
             >
               <Typography color={"orange"}>Logout</Typography>
             </Button>
