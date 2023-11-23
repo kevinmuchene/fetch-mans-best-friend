@@ -27,6 +27,7 @@ const SignIn = function SiginCard() {
         .signin(values)
         .then((res) => {
           console.log(res);
+          navigate("/dogs");
         })
         .catch((err) => {
           console.log("Error in signing in user" + err);
