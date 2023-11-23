@@ -2,6 +2,7 @@ import { TextField, Button, Box, Grid, Typography, Paper } from "@mui/material";
 import { useFormik } from "formik";
 import SelectBreedComponent from "../MultiSelectChipComponent";
 import { useFetchBreeds } from "../fetchData/useFetchBreeds";
+import dogAction from "../../Actions/DogAction";
 
 const items = [
   "Oliver Hansen",
@@ -16,7 +17,7 @@ const items = [
   "Kelly Snyder",
 ];
 
-function DogFilterComponent() {
+function DogFilterComponent({ setDogDataArray }) {
   const [breeds] = useFetchBreeds();
 
   // console.log(breeds);
@@ -30,21 +31,25 @@ function DogFilterComponent() {
     },
 
     onSubmit: (values, { resetForm }) => {
-      const zipcodesArray = values.zipCodes
-        .split(",")
-        .map((zipcode) => zipcode.trim());
-      const finalValues = {
-        ...values,
+      console.log(values);
+      dogAction
+        .searchDogs(
+          values.breeds.join("&"),
+          values.ageMin,
+          values.ageMax,
+          values.zipCodes.split(",").join("&")
+        )
+        .then((res) => {
+          console.log(res);
+          setDogDataArray(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
 
-        zipCodes: zipcodesArray,
-      };
-
-      console.log(finalValues);
       resetForm();
     },
   });
-
-  const fetchFilteredDogData = (values) => {};
 
   return (
     <Paper sx={{ width: "100%", mb: 2 }}>

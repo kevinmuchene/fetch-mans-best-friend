@@ -6,8 +6,16 @@ export default class DogAction {
       return res.data || {};
     });
   }
-  static async searchDogs() {
-    return dogService.searchDogs().then((res) => {
+  static async searchDogs(dogBreedsString, minAge, maxAge, zip_code) {
+    return dogService
+      .searchDogs(dogBreedsString, minAge, maxAge, zip_code)
+      .then((res) => {
+        return res.data || {};
+      });
+  }
+
+  static async fetchDogs(data) {
+    return dogService.fetchDogs(data).then((res) => {
       return res.data || {};
     });
   }

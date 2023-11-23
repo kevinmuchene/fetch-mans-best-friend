@@ -9,7 +9,7 @@ import Chip from "@mui/material/Chip";
 const MenuProps = {
   PaperProps: {
     style: {
-      maxHeight: "50vh",
+      maxHeight: "20vh",
       overflow: "auto",
     },
   },

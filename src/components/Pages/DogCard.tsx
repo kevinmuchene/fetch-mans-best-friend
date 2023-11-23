@@ -4,33 +4,33 @@ import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Button from "@mui/material/Button";
 import { Typography, Grid } from "@mui/material";
-import dogpic from "../../assets/manbestfriend.jpg";
 import AutoStoriesIcon from "@mui/icons-material/AutoStories";
 
-export default function DogCard() {
+export default function DogCard({ data }) {
+  // console.log(data);
   return (
     <Card sx={{ maxWidth: 345 }}>
-      <CardMedia sx={{ height: 140 }} image={dogpic} title="green iguana" />
+      <CardMedia sx={{ height: 140 }} image={data.img} title="green iguana" />
       <CardContent>
         <Grid container spacing={2}>
           <Grid item md={6} xs={6}>
             <Typography variant="body2" color="text.secondary">
-              Name: Name
+              Name: {data.name}
             </Typography>
           </Grid>
           <Grid item md={6} xs={6}>
             <Typography variant="body2" color="text.secondary">
-              Age: age
+              Age: {data.age}
             </Typography>
           </Grid>
           <Grid item md={6} xs={6}>
             <Typography variant="body2" color="text.secondary">
-              Breed: breed
+              Breed: {data.breed}
             </Typography>
           </Grid>
           <Grid item md={6} xs={6}>
             <Typography variant="body2" color="text.secondary">
-              Zipcode: zipcode
+              Zipcode: {data.zip_code}
             </Typography>
           </Grid>
         </Grid>

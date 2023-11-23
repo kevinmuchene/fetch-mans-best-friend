@@ -6,7 +6,13 @@ export default class DogService {
     return defaultRestApi.get(APIs.fetchBreeds());
   };
 
-  static searchDogs = () => {
-    return defaultRestApi.get(APIs.searchDogs());
+  static searchDogs = (dogBreedsString, minAge, maxAge, zip_code) => {
+    return defaultRestApi.get(
+      APIs.searchDogs(dogBreedsString, minAge, maxAge, zip_code)
+    );
+  };
+
+  static fetchDogs = (data) => {
+    return defaultRestApi.post(APIs.fetchDogs(), data);
   };
 }
