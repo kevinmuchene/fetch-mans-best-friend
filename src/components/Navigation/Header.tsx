@@ -7,13 +7,17 @@ import dog from "../../assets/manbestfriend.jpg";
 import { Hidden } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
 import authService from "../../services/AuthService";
+import { useNavigate } from "react-router-dom";
 
 export default function Header() {
+  const navigate = useNavigate();
+
   const signOutUser = () => {
     authService
       .signout()
       .then((res) => {
-        console.log(res);
+        console.log(res + "successfully signed out user");
+        navigate("/");
       })
       .catch((err) => {
         console.log("Error in signing out user" + err);
