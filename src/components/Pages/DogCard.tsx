@@ -9,7 +9,7 @@ import AutoStoriesIcon from "@mui/icons-material/AutoStories";
 export default function DogCard({ data }) {
   // console.log(data);
   return (
-    <Card sx={{ maxWidth: 345 }}>
+    <Card sx={{ maxWidth: "50%" }}>
       <CardMedia sx={{ height: 140 }} image={data.img} title="green iguana" />
       <CardContent>
         <Grid container spacing={2}>
