@@ -2,32 +2,41 @@ import { Typography, Grid, Container } from "@mui/material";
 import DogCard from "./DogCard";
 import { useContext, useEffect, useState } from "react";
 import { DogContext } from "../../context/DogContext";
+import DogAction from "../../Actions/DogAction";
 
 function FavDogsComponent() {
   const { favoriteDogs } = useContext(DogContext);
 
-  console.log(favoriteDogs);
+  const [favoriteDog, setFavoriteDog] = useState([]);
 
-  // console.log
+  useEffect(() => {
+    const fetchFavoriteMatchAndDogs = async () => {
+      try {
+        const matchResponse = await DogAction.fetchFavoriteMatch(favoriteDogs);
 
-  // console.log(favoriteDogs);
+        const arrayId = [];
+
+        arrayId.push(matchResponse.match);
+
+        const dogsResponse = await DogAction.fetchDogs(arrayId);
+
+        setFavoriteDog(dogsResponse);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    fetchFavoriteMatchAndDogs();
+  }, [favoriteDogs]);
   return (
-    <Container>
-      <Typography align="center" variant="h4" color="orange" sx={{ m: 3 }}>
-        Your Favorite Dogs
+    <>
+      <Typography variant="h4" align="center" color="orange" sx={{ m: 3 }}>
+        We Got A Match For You
       </Typography>
-      <Grid container spacing={2}>
-        {favoriteDogs.length > 0 ? (
-          favoriteDogs.map((dog) => (
-            <Grid key={dog.id} item md={4}>
-              <DogCard data={dog} />
-            </Grid>
-          ))
-        ) : (
-          <h6>Try again later</h6>
-        )}
-      </Grid>
-    </Container>
+      <Container sx={{ display: "flex", justifyContent: "center" }}>
+        {favoriteDog.length > 0 && <DogCard data={favoriteDog[0]} />}
+      </Container>
+    </>
   );
 }
 
