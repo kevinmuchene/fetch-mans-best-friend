@@ -22,6 +22,9 @@ const APIs = {
   fetchDogs: function () {
     return `${apiMainURL}${fetchDogs}`;
   },
+  fetchNextPageData: function (nextAPI) {
+    return `${apiMainURL}${nextAPI}`;
+  },
 };
 
 export default APIs;

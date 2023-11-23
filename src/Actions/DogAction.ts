@@ -19,4 +19,10 @@ export default class DogAction {
       return res.data || {};
     });
   }
+
+  static async fetchNextPageData(data) {
+    return dogService.fetchNextPageData(data).then((res) => {
+      return res.data || {};
+    });
+  }
 }

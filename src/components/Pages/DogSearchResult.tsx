@@ -20,6 +20,8 @@ import FilterListIcon from "@mui/icons-material/FilterList";
 import { visuallyHidden } from "@mui/utils";
 import { useNavigate } from "react-router-dom";
 import { DogContext } from "../../context/DogContext";
+import useFetchMoreData from "../fetchData/useFetchNextData";
+import DogAction from "../../Actions/DogAction";
 
 interface Dog {
   id: string;
@@ -245,20 +247,39 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
     </Toolbar>
   );
 }
-export default function DogSearchResult({ dogData, nextApi }) {
+export default function DogSearchResult({ dogIDs, nextApi }) {
   const [order, setOrder] = useState<Order>("asc");
   const [orderBy, setOrderBy] = useState<keyof Dog>("breed");
   const [selected, setSelected] = useState<readonly number[]>([]);
   const [page, setPage] = useState(0);
 
+  const { fetchMoreData } = useFetchMoreData(nextApi);
+
   const navigate = useNavigate();
 
   const { setFavoriteDogs } = useContext(DogContext);
 
-  console.log(dogData);
+  console.log(nextApi);
+  // debugger;
+  const [dogData, setDogData] = useState([]);
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [nextEndpoint, setNextEndpoint] = useState<string | null>("");
+
+  React.useEffect(() => {
+    function fetchDogs() {
+      DogAction.fetchDogs(dogIDs)
+        .then((res) => {
+          console.log(res);
+          setDogData(res);
+          // debugger;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+    fetchDogs();
+  }, [dogIDs]);
 
   const favoriteDogData = (dogId: string) => {
     // dogData
@@ -309,38 +330,16 @@ export default function DogSearchResult({ dogData, nextApi }) {
       );
     }
     setSelected(newSelected);
-    console.log(newSelected);
-    // setFavoriteDogs(newSelected);
-  };
-
-  const fetchMoreData = async () => {
-    console.log("From fetchmoredata");
-    console.log(nextEndpoint);
-    if (nextEndpoint) {
-      try {
-        const response = await fetch(
-          `https://frontend-take-home-service.fetch.com${nextEndpoint}`,
-          {
-            credentials: "include", // Include credentials in the request
-          }
-        );
-        const newData = await response.json();
-
-        debugger;
-
-        // Update dogData and nextEndpoint
-        setNextEndpoint(newData.next);
-      } catch (error) {
-        console.error("Error fetching more data:", error);
-      }
-    }
   };
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
     if (newPage === Math.ceil(dogData.length / rowsPerPage) - 1) {
       setNextEndpoint(nextApi);
+      // debugger;
+      console.log(nextApi);
       fetchMoreData();
+      console.log("AFter fetch more date");
     }
   };
 
@@ -356,16 +355,14 @@ export default function DogSearchResult({ dogData, nextApi }) {
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - dogData.length) : 0;
 
-  const visibleRows = React.useMemo(
-    () =>
-      stableSort(dogData, getComparator(order, orderBy)).slice(
-        page * rowsPerPage,
-        page * rowsPerPage + rowsPerPage
-      ),
-    [order, orderBy, page, rowsPerPage]
-  );
+  const visibleRows = React.useMemo(() => {
+    // console.log("Recalculating visible rows");
 
-  console.log(visibleRows);
+    return stableSort(dogData, getComparator(order, orderBy)).slice(
+      page * rowsPerPage,
+      page * rowsPerPage + rowsPerPage
+    );
+  }, [order, orderBy, page, rowsPerPage, dogData]);
 
   return (
     <Box sx={{ width: "100%", mt: 4 }}>

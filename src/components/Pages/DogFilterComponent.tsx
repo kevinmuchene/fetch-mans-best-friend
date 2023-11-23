@@ -4,20 +4,7 @@ import SelectBreedComponent from "../MultiSelectChipComponent";
 import { useFetchBreeds } from "../fetchData/useFetchBreeds";
 import dogAction from "../../Actions/DogAction";
 
-const items = [
-  "Oliver Hansen",
-  "Van Henry",
-  "April Tucker",
-  "Ralph Hubbard",
-  "Omar Alexander",
-  "Carlos Abbott",
-  "Miriam Wagner",
-  "Bradley Wilkerson",
-  "Virginia Andrews",
-  "Kelly Snyder",
-];
-
-function DogFilterComponent({ setDogDataArray }) {
+function DogFilterComponent({}) {
   const [breeds] = useFetchBreeds();
 
   // console.log(breeds);
