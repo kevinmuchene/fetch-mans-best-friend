@@ -172,20 +172,28 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             key={headCell.id}
             align={headCell.numeric ? "right" : "left"}
             padding={headCell.disablePadding ? "none" : "normal"}
-            sortDirection={orderBy === headCell.id ? order : false}
+            sortDirection={
+              headCell.id === "breed" && orderBy === headCell.id ? order : false
+            }
           >
-            <TableSortLabel
-              active={orderBy === headCell.id}
-              direction={orderBy === headCell.id ? order : "asc"}
-              onClick={createSortHandler(headCell.id)}
-            >
-              {headCell.label}
-              {orderBy === headCell.id ? (
-                <Box component="span" sx={visuallyHidden}>
-                  {order === "desc" ? "sorted descending" : "sorted ascending"}
-                </Box>
-              ) : null}
-            </TableSortLabel>
+            {headCell.id === "breed" ? (
+              <TableSortLabel
+                active={orderBy === headCell.id}
+                direction={orderBy === headCell.id ? order : "asc"}
+                onClick={createSortHandler(headCell.id)}
+              >
+                {headCell.label}
+                {orderBy === headCell.id ? (
+                  <Box component="span" sx={visuallyHidden}>
+                    {order === "desc"
+                      ? "sorted descending"
+                      : "sorted ascending"}
+                  </Box>
+                ) : null}
+              </TableSortLabel>
+            ) : (
+              headCell.label
+            )}
           </TableCell>
         ))}
       </TableRow>
@@ -247,54 +255,76 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
     </Toolbar>
   );
 }
-export default function DogSearchResult({ dogIDs, nextApi }) {
+export default function DogSearchResult({ initialDogData, nextApi }) {
   const [order, setOrder] = useState<Order>("asc");
   const [orderBy, setOrderBy] = useState<keyof Dog>("breed");
   const [selected, setSelected] = useState<readonly number[]>([]);
   const [page, setPage] = useState(0);
 
-  const { fetchMoreData } = useFetchMoreData(nextApi);
+  // const { fetchMoreData } = useFetchMoreData(nextApi);
 
   const navigate = useNavigate();
+  // console.log(page);
 
   const { setFavoriteDogs } = useContext(DogContext);
 
-  console.log(nextApi);
+  // console.log(nextApi);
+  // console.log(initialDogData);
   // debugger;
   const [dogData, setDogData] = useState([]);
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [nextEndpoint, setNextEndpoint] = useState<string | null>("");
 
-  React.useEffect(() => {
-    function fetchDogs() {
-      DogAction.fetchDogs(dogIDs)
-        .then((res) => {
-          console.log(res);
-          setDogData(res);
-          // debugger;
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const fetchMoreData = async () => {
+    // debugger;
+    if (!nextEndpoint) return; // No more data to fetch
+
+    try {
+      setIsLoading(true);
+      // console.log(nextEndpoint);
+      const nextPageResponse = await DogAction.fetchNextPageData(nextEndpoint);
+
+      const newDogsData = await DogAction.fetchDogs(nextPageResponse.resultIds);
+
+      console.log(newDogsData);
+      setDogData((dogData) => [...dogData, ...newDogsData]);
+      setNextEndpoint(nextPageResponse.next);
+      // debugger;
+      setIsLoading(false);
+    } catch (err) {
+      setError(err.message);
+      setIsLoading(false);
     }
-    fetchDogs();
-  }, [dogIDs]);
+  };
+
+  React.useEffect(() => {
+    setDogData(initialDogData);
+    setNextEndpoint(nextApi);
+  }, [initialDogData]);
 
   const favoriteDogData = (dogId: string) => {
     // dogData
 
-    let dog = dogData.find((dog) => dog.id === dogId);
+    // let dog = dogData.find((dog) => dog.id === dogId);
+    // let favoriteDogIds = [];
 
-    console.log(dog);
+    // favoriteDogIds.push(dogId);
 
-    setFavoriteDogs((data) => [dog, ...data]);
+    // console.log(dog);
+
+    setFavoriteDogs((prevFavoriteDogs) => [dogId, ...prevFavoriteDogs]);
   };
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
     property: keyof Dog
   ) => {
+    if (property !== "breed") return;
+
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
     setOrderBy(property);
@@ -316,13 +346,13 @@ export default function DogSearchResult({ dogIDs, nextApi }) {
     if (selectedIndex === -1) {
       newSelected = newSelected.concat(selected, id);
       favoriteDogData("" + id);
-      console.log("added" + id);
+      // console.log("added" + id);
     } else if (selectedIndex === 0) {
       newSelected = newSelected.concat(selected.slice(1));
-      console.log("removed" + id);
+      // console.log("removed" + id);
     } else if (selectedIndex === selected.length - 1) {
       newSelected = newSelected.concat(selected.slice(0, -1));
-      console.log("removed" + id);
+      // console.log("removed" + id);
     } else if (selectedIndex > 0) {
       newSelected = newSelected.concat(
         selected.slice(0, selectedIndex),
@@ -333,13 +363,13 @@ export default function DogSearchResult({ dogIDs, nextApi }) {
   };
 
   const handleChangePage = (event: unknown, newPage: number) => {
+    // debugger;
     setPage(newPage);
-    if (newPage === Math.ceil(dogData.length / rowsPerPage) - 1) {
-      setNextEndpoint(nextApi);
+    const isLastPage = newPage === Math.ceil(dogData.length / rowsPerPage) - 1;
+    // debugger;
+    if (isLastPage && nextEndpoint) {
       // debugger;
-      console.log(nextApi);
       fetchMoreData();
-      console.log("AFter fetch more date");
     }
   };
 
@@ -453,11 +483,8 @@ export default function DogSearchResult({ dogIDs, nextApi }) {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
         {/* New "Load More" button */}
-        {nextEndpoint && (
-          <Button variant="contained" onClick={fetchMoreData}>
-            Load More
-          </Button>
-        )}
+        {isLoading && <p>Loading...</p>}
+        {error && <p>Error: {error}</p>}
       </Paper>
       <Button variant="contained" onClick={() => navigate("/favoritedogs")}>
         Match My Fav Dogs

@@ -4,7 +4,7 @@ import SelectBreedComponent from "../MultiSelectChipComponent";
 import { useFetchBreeds } from "../fetchData/useFetchBreeds";
 import dogAction from "../../Actions/DogAction";
 
-function DogFilterComponent({}) {
+function DogFilterComponent({ setDogDataArray }) {
   const [breeds] = useFetchBreeds();
 
   // console.log(breeds);
@@ -19,6 +19,7 @@ function DogFilterComponent({}) {
 
     onSubmit: (values, { resetForm }) => {
       console.log(values);
+
       dogAction
         .searchDogs(
           values.breeds.join("&"),
