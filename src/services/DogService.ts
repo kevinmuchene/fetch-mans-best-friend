@@ -19,4 +19,8 @@ export default class DogService {
   static fetchNextPageData = (nextAPI) => {
     return defaultRestApi.get(APIs.fetchNextPageData(nextAPI));
   };
+
+  static fetchFavoriteMatch = (data) => {
+    return defaultRestApi.post(APIs.matchFavoriteDog(), data);
+  };
 }

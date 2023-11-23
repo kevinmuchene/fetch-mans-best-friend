@@ -25,4 +25,10 @@ export default class DogAction {
       return res.data || {};
     });
   }
+
+  static async fetchFavoriteMatch(data) {
+    return dogService.fetchFavoriteMatch(data).then((res) => {
+      return res.data || {};
+    });
+  }
 }

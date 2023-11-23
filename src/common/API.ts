@@ -5,6 +5,7 @@ const authLogOutService = "/auth/logout";
 const fetchBreeds = "/dogs/breeds";
 const searchAPI = "/dogs/search";
 const fetchDogs = "/dogs";
+const matchFavoriteDog = "/dogs/match";
 
 const APIs = {
   getAuthCookie: function () {
@@ -17,13 +18,24 @@ const APIs = {
     return `${apiMainURL}${fetchBreeds}`;
   },
   searchDogs: function (dogBreedsString, minAge, maxAge, zip_code) {
-    return `${apiMainURL}${searchAPI}?breeds=${dogBreedsString}&minAge=${minAge}&maxAge=${maxAge}&zip_code=${zip_code}`;
+    console.log(
+      `${apiMainURL}${searchAPI}?ageMin=${minAge}&ageMax=${maxAge}${
+        zip_code ? `&zipCodes=${zip_code}` : ""
+      }${dogBreedsString ? `&breeds=${dogBreedsString}` : ""} `
+    );
+
+    return `${apiMainURL}${searchAPI}?ageMin=${minAge}&ageMax=${maxAge}${
+      zip_code ? `&zipCodes=${zip_code}` : ""
+    }${dogBreedsString ? `&breeds=${dogBreedsString}` : ""} `;
   },
   fetchDogs: function () {
     return `${apiMainURL}${fetchDogs}`;
   },
   fetchNextPageData: function (nextAPI) {
     return `${apiMainURL}${nextAPI}`;
+  },
+  matchFavoriteDog: function () {
+    return `${apiMainURL}${matchFavoriteDog}`;
   },
 };
 
