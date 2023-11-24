@@ -4,6 +4,8 @@ import DogSearchResult from "./DogSearchResult";
 import { useEffect, useState } from "react";
 import dogAction from "../../Actions/DogAction";
 
+const endPointsList = [];
+
 function SearchPage() {
   const [dogDataArray, setDogDataArray] = useState({});
   const [dogData, setDogData] = useState([]);
@@ -33,6 +35,7 @@ function SearchPage() {
       <DogFilterComponent setDogDataArray={setDogDataArray} />
       <DogSearchResult
         // dogIDs={dogDataArray.resultIds}
+        endPointsList={endPointsList}
         initialDogData={initialDogData}
         nextApi={dogDataArray.next}
       />

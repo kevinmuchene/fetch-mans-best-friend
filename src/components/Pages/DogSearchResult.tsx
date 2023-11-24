@@ -255,7 +255,11 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
     </Toolbar>
   );
 }
-export default function DogSearchResult({ initialDogData, nextApi }) {
+export default function DogSearchResult({
+  initialDogData,
+  nextApi,
+  endPointsList,
+}) {
   const [order, setOrder] = useState<Order>("asc");
   const [orderBy, setOrderBy] = useState<keyof Dog>("breed");
   const [selected, setSelected] = useState<readonly number[]>([]);
@@ -269,18 +273,21 @@ export default function DogSearchResult({ initialDogData, nextApi }) {
   const { setFavoriteDogs } = useContext(DogContext);
 
   // console.log(nextApi);
-  // console.log(initialDogData);
+  console.log(initialDogData);
   // debugger;
   const [dogData, setDogData] = useState([]);
 
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(25);
   const [nextEndpoint, setNextEndpoint] = useState<string | null>("");
+  const [prevEndpoint, setPrevEndpoint] = useState<string | null>("");
+
+  const [paginationCount, setPaginationCount] = useState(0);
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const fetchMoreData = async () => {
-    // debugger;
+    debugger;
     if (!nextEndpoint) return; // No more data to fetch
 
     try {
@@ -291,10 +298,16 @@ export default function DogSearchResult({ initialDogData, nextApi }) {
       const newDogsData = await DogAction.fetchDogs(nextPageResponse.resultIds);
 
       console.log(newDogsData);
-      setDogData((dogData) => [...dogData, ...newDogsData]);
+      setDogData((dogData) => [...newDogsData]);
+      setPaginationCount((prevCount) => prevCount + newDogsData.length);
       setNextEndpoint(nextPageResponse.next);
+      setPrevEndpoint(nextPageResponse.prev);
+      endPointsList.push({
+        prev: nextPageResponse.prev ? nextPageResponse.prev : "",
+      });
       // debugger;
       setIsLoading(false);
+      // console.log(dogData);
     } catch (err) {
       setError(err.message);
       setIsLoading(false);
@@ -304,18 +317,16 @@ export default function DogSearchResult({ initialDogData, nextApi }) {
   React.useEffect(() => {
     setDogData(initialDogData);
     setNextEndpoint(nextApi);
+    setPaginationCount((prevCount) => prevCount + initialDogData.length);
   }, [initialDogData]);
 
+  // React.useEffect(() => {
+  //   if (nextEndpoint) {
+  //     setPaginationCount((prevCount) => prevCount + initialDogData.length + 1);
+  //   }
+  // }, [nextEndpoint]);
+
   const favoriteDogData = (dogId: string) => {
-    // dogData
-
-    // let dog = dogData.find((dog) => dog.id === dogId);
-    // let favoriteDogIds = [];
-
-    // favoriteDogIds.push(dogId);
-
-    // console.log(dog);
-
     setFavoriteDogs((prevFavoriteDogs) => [dogId, ...prevFavoriteDogs]);
   };
 
@@ -364,14 +375,18 @@ export default function DogSearchResult({ initialDogData, nextApi }) {
 
   const handleChangePage = (event: unknown, newPage: number) => {
     // debugger;
+    // endPointsMap.set(page, )
     setPage(newPage);
-    const isLastPage = newPage === Math.ceil(dogData.length / rowsPerPage) - 1;
+    const isLastPage = newPage === Math.ceil(paginationCount / rowsPerPage) - 1;
     // debugger;
     if (isLastPage && nextEndpoint) {
       // debugger;
+
       fetchMoreData();
     }
   };
+
+  console.log(endPointsList);
 
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -383,7 +398,8 @@ export default function DogSearchResult({ initialDogData, nextApi }) {
   const isSelected = (id: number) => selected.indexOf(id) !== -1;
 
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - dogData.length) : 0;
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - paginationCount) : 0;
+  console.log("Empty rows" + emptyRows);
 
   const visibleRows = React.useMemo(() => {
     // console.log("Recalculating visible rows");
@@ -406,7 +422,7 @@ export default function DogSearchResult({ initialDogData, nextApi }) {
               orderBy={orderBy}
               onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
-              rowCount={dogData.length}
+              rowCount={paginationCount}
             />
             <TableBody>
               {visibleRows.map((dog, index) => {
@@ -474,13 +490,15 @@ export default function DogSearchResult({ initialDogData, nextApi }) {
           </Table>
         </TableContainer>
         <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
+          // sx={{ border: "2px blue groove" }}
+          rowsPerPageOptions={[25]}
           component="div"
-          count={dogData.length}
+          count={paginationCount}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
+          // slotProps.action.n
         />
         {/* New "Load More" button */}
         {isLoading && <p>Loading...</p>}
