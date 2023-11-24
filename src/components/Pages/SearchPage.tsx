@@ -13,7 +13,7 @@ function SearchPage() {
 
   // dogDataArray.resultIds.push("df");
   // console.log(dogArrayDataIds);
-  // console.log(dogDataArray);
+  console.log(dogDataArray);
 
   useEffect(() => {
     function fetchInitialDogData() {
@@ -38,6 +38,7 @@ function SearchPage() {
         endPointsList={endPointsList}
         initialDogData={initialDogData}
         nextApi={dogDataArray.next}
+        totalItems={dogDataArray.total}
       />
     </Container>
   );

@@ -259,6 +259,7 @@ export default function DogSearchResult({
   initialDogData,
   nextApi,
   endPointsList,
+  totalItems,
 }) {
   const [order, setOrder] = useState<Order>("asc");
   const [orderBy, setOrderBy] = useState<keyof Dog>("breed");
@@ -281,15 +282,12 @@ export default function DogSearchResult({
   const [nextEndpoint, setNextEndpoint] = useState<string | null>("");
   const [prevEndpoint, setPrevEndpoint] = useState<string | null>("");
 
-  const [paginationCount, setPaginationCount] = useState(0);
+  // const [paginationCount, setPaginationCount] = useState(0);
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const fetchMoreData = async () => {
-    debugger;
-    if (!nextEndpoint) return; // No more data to fetch
-
     try {
       setIsLoading(true);
       // console.log(nextEndpoint);
@@ -298,8 +296,17 @@ export default function DogSearchResult({
       const newDogsData = await DogAction.fetchDogs(nextPageResponse.resultIds);
 
       console.log(newDogsData);
-      setDogData((dogData) => [...newDogsData]);
-      setPaginationCount((prevCount) => prevCount + newDogsData.length);
+      setDogData((prevDogData) => {
+        // Combine the existing data with the new data
+        const combinedData = [...prevDogData, ...newDogsData];
+
+        // Remove the first 25 elements
+        const updatedDogData = combinedData.slice(25);
+
+        return updatedDogData;
+      });
+
+      // setPaginationCount((prevCount) => prevCount + newDogsData.length);
       setNextEndpoint(nextPageResponse.next);
       setPrevEndpoint(nextPageResponse.prev);
       endPointsList.push({
@@ -317,7 +324,7 @@ export default function DogSearchResult({
   React.useEffect(() => {
     setDogData(initialDogData);
     setNextEndpoint(nextApi);
-    setPaginationCount((prevCount) => prevCount + initialDogData.length);
+    // setPaginationCount((prevCount) => prevCount + initialDogData.length);
   }, [initialDogData]);
 
   // React.useEffect(() => {
@@ -377,9 +384,9 @@ export default function DogSearchResult({
     // debugger;
     // endPointsMap.set(page, )
     setPage(newPage);
-    const isLastPage = newPage === Math.ceil(paginationCount / rowsPerPage) - 1;
-    // debugger;
-    if (isLastPage && nextEndpoint) {
+
+    debugger;
+    if (nextEndpoint) {
       // debugger;
 
       fetchMoreData();
@@ -398,7 +405,7 @@ export default function DogSearchResult({
   const isSelected = (id: number) => selected.indexOf(id) !== -1;
 
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - paginationCount) : 0;
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - dogData.length) : 0;
   console.log("Empty rows" + emptyRows);
 
   const visibleRows = React.useMemo(() => {
@@ -422,7 +429,7 @@ export default function DogSearchResult({
               orderBy={orderBy}
               onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
-              rowCount={paginationCount}
+              rowCount={dogData.length}
             />
             <TableBody>
               {visibleRows.map((dog, index) => {
@@ -493,7 +500,7 @@ export default function DogSearchResult({
           // sx={{ border: "2px blue groove" }}
           rowsPerPageOptions={[25]}
           component="div"
-          count={paginationCount}
+          count={totalItems ? totalItems : 0}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
