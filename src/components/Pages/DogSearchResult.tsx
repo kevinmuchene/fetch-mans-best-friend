@@ -258,7 +258,6 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 export default function DogSearchResult({
   initialDogData,
   nextApi,
-  endPointsList,
   totalItems,
 }) {
   const [order, setOrder] = useState<Order>("asc");
@@ -287,34 +286,26 @@ export default function DogSearchResult({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const fetchMoreData = async () => {
+  const fetchMoreData = async (tempNextEndPoint) => {
+    console.log(page);
+    // debugger;
     try {
       setIsLoading(true);
       // console.log(nextEndpoint);
-      const nextPageResponse = await DogAction.fetchNextPageData(nextEndpoint);
+      const nextPageResponse = await DogAction.fetchNextPageData(
+        tempNextEndPoint
+      );
 
       const newDogsData = await DogAction.fetchDogs(nextPageResponse.resultIds);
 
       console.log(newDogsData);
-      setDogData((prevDogData) => {
-        // Combine the existing data with the new data
-        const combinedData = [...prevDogData, ...newDogsData];
-
-        // Remove the first 25 elements
-        const updatedDogData = combinedData.slice(25);
-
-        return updatedDogData;
-      });
+      setDogData(newDogsData);
 
       // setPaginationCount((prevCount) => prevCount + newDogsData.length);
       setNextEndpoint(nextPageResponse.next);
       setPrevEndpoint(nextPageResponse.prev);
-      endPointsList.push({
-        prev: nextPageResponse.prev ? nextPageResponse.prev : "",
-      });
-      // debugger;
+
       setIsLoading(false);
-      // console.log(dogData);
     } catch (err) {
       setError(err.message);
       setIsLoading(false);
@@ -326,12 +317,6 @@ export default function DogSearchResult({
     setNextEndpoint(nextApi);
     // setPaginationCount((prevCount) => prevCount + initialDogData.length);
   }, [initialDogData]);
-
-  // React.useEffect(() => {
-  //   if (nextEndpoint) {
-  //     setPaginationCount((prevCount) => prevCount + initialDogData.length + 1);
-  //   }
-  // }, [nextEndpoint]);
 
   const favoriteDogData = (dogId: string) => {
     setFavoriteDogs((prevFavoriteDogs) => [dogId, ...prevFavoriteDogs]);
@@ -381,41 +366,33 @@ export default function DogSearchResult({
   };
 
   const handleChangePage = (event: unknown, newPage: number) => {
-    // debugger;
-    // endPointsMap.set(page, )
     setPage(newPage);
 
-    debugger;
-    if (nextEndpoint) {
-      // debugger;
-
-      fetchMoreData();
+    if (newPage > page && nextEndpoint) {
+      // setTimeout(() => {
+      fetchMoreData(nextEndpoint);
+      // }, 1000);
+    } else if (newPage < page && prevEndpoint) {
+      fetchMoreData(prevEndpoint);
+      console.log(prevEndpoint + "calling prev end point");
+    } else {
+      console.log("Check the newPage ore event");
     }
-  };
 
-  console.log(endPointsList);
+    console.log(newPage);
+  };
 
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
+    console.log(parseInt(event.target.value, 10));
+    debugger;
   };
 
   const isSelected = (id: number) => selected.indexOf(id) !== -1;
 
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - dogData.length) : 0;
-  console.log("Empty rows" + emptyRows);
-
-  const visibleRows = React.useMemo(() => {
-    // console.log("Recalculating visible rows");
-
-    return stableSort(dogData, getComparator(order, orderBy)).slice(
-      page * rowsPerPage,
-      page * rowsPerPage + rowsPerPage
-    );
-  }, [order, orderBy, page, rowsPerPage, dogData]);
+  console.log(dogData);
 
   return (
     <Box sx={{ width: "100%", mt: 4 }}>
@@ -432,7 +409,7 @@ export default function DogSearchResult({
               rowCount={dogData.length}
             />
             <TableBody>
-              {visibleRows.map((dog, index) => {
+              {dogData.map((dog, index) => {
                 const isItemSelected = isSelected(dog.id);
                 const labelId = `enhanced-table-checkbox-${index}`;
 
@@ -484,15 +461,6 @@ export default function DogSearchResult({
                   </TableRow>
                 );
               })}
-              {emptyRows > 0 && (
-                <TableRow
-                  style={{
-                    height: 53 * emptyRows,
-                  }}
-                >
-                  <TableCell colSpan={6} />
-                </TableRow>
-              )}
             </TableBody>
           </Table>
         </TableContainer>
