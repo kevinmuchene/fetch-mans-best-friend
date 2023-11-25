@@ -1,45 +1,18 @@
-import { TextField, Container, Box, Grid, Button } from "@mui/material";
+import { Container } from "@mui/material";
 import DogFilterComponent from "./DogFilterComponent";
 import DogSearchResult from "./DogSearchResult";
-import { useEffect, useState } from "react";
-import dogAction from "../../Actions/DogAction";
-
-const endPointsList = [];
+import { useState } from "react";
 
 function SearchPage() {
-  const [dogDataArray, setDogDataArray] = useState({});
-  const [dogData, setDogData] = useState([]);
-  const [initialDogData, setInitialDogData] = useState([]);
-
-  // dogDataArray.resultIds.push("df");
-  // console.log(dogArrayDataIds);
-  console.log(dogDataArray);
-
-  useEffect(() => {
-    function fetchInitialDogData() {
-      dogAction
-        .fetchDogs(dogDataArray.resultIds)
-        .then((res) => {
-          // console.log(res);
-          setInitialDogData(res);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    }
-    fetchInitialDogData();
-  }, [dogDataArray]);
-
+  const [apiResultObject, setApiResultObject] = useState({});
+  console.log(apiResultObject);
   return (
     <Container>
-      <DogFilterComponent setDogDataArray={setDogDataArray} />
-      <DogSearchResult
-        // dogIDs={dogDataArray.resultIds}
-        endPointsList={endPointsList}
-        initialDogData={initialDogData}
-        nextApi={dogDataArray.next}
-        totalItems={dogDataArray.total}
-      />
+      <DogFilterComponent setApiResultObject={setApiResultObject} />
+
+      {apiResultObject.resultIds && (
+        <DogSearchResult apiResultObject={apiResultObject} />
+      )}
     </Container>
   );
 }

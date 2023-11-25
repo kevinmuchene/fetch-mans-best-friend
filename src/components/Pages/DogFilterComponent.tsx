@@ -4,7 +4,7 @@ import SelectBreedComponent from "../MultiSelectChipComponent";
 import { useFetchBreeds } from "../fetchData/useFetchBreeds";
 import dogAction from "../../Actions/DogAction";
 
-function DogFilterComponent({ setDogDataArray }) {
+function DogFilterComponent({ setApiResultObject }) {
   const [breeds] = useFetchBreeds();
 
   // console.log(breeds);
@@ -19,17 +19,18 @@ function DogFilterComponent({ setDogDataArray }) {
 
     onSubmit: (values, { resetForm }) => {
       console.log(values);
-
+      // const dogBreedsString = dogBreeds.map(breed => `breeds=${encodeURIComponent(breed)}`).join("&");
+      // setApiResultObject(afterSearchData);
       dogAction
         .searchDogs(
-          values.breeds.join("&"),
+          values.breeds,
           values.ageMin,
           values.ageMax,
           values.zipCodes.split(",").join("&")
         )
         .then((res) => {
           console.log(res);
-          setDogDataArray(res);
+          setApiResultObject(res);
         })
         .catch((err) => {
           console.log(err);
@@ -119,3 +120,38 @@ function DogFilterComponent({ setDogDataArray }) {
 }
 
 export default DogFilterComponent;
+
+/**
+ * 
+ * const afterSearchData = {
+  next: "/dogs/search?breeds%5B0%5D=Dingo&breeds%5B1%5D=EntleBucher&breeds%5B2%5D=German%20Shepherd&breeds%5B3%5D=Collie&ageMax=1&ageMin=0&size=25&from=25",
+  resultIds: [
+    "13GFTIcBOvEgQ5OCx6sr",
+    "73GFTIcBOvEgQ5OCx6sr",
+    "gXGFTIcBOvEgQ5OCx64s",
+    "q3GFTIcBOvEgQ5OCx64s",
+    "_XGFTIcBOvEgQ5OCx64s",
+    "SXGFTIcBOvEgQ5OCx809",
+    "Y3GFTIcBOvEgQ5OCx809",
+    "g3GFTIcBOvEgQ5OCx809",
+    "K3GFTIcBOvEgQ5OCx9lG",
+    "dnGFTIcBOvEgQ5OCx9lG",
+    "rHGFTIcBOvEgQ5OCx9lG",
+    "snGFTIcBOvEgQ5OCx9lG",
+    "uHGFTIcBOvEgQ5OCx9lG",
+    "uXGFTIcBOvEgQ5OCx6sq",
+    "unGFTIcBOvEgQ5OCx6sq",
+    "t3GFTIcBOvEgQ5OCx64s",
+    "x3GFTIcBOvEgQ5OCx64s",
+    "5HGFTIcBOvEgQ5OCx64s",
+    "A3GFTIcBOvEgQ5OCx68s",
+    "BXGFTIcBOvEgQ5OCx68s",
+    "X3GFTIcBOvEgQ5OCx809",
+    "ZXGFTIcBOvEgQ5OCx809",
+    "b3GFTIcBOvEgQ5OCx809",
+    "l3GFTIcBOvEgQ5OCx809",
+    "JXGFTIcBOvEgQ5OCx9lG",
+  ],
+  total: 84,
+};
+ */

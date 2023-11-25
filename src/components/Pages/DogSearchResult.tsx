@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { alpha } from "@mui/material/styles";
 import { Box, Button } from "@mui/material";
 import Table from "@mui/material/Table";
@@ -22,6 +22,7 @@ import { useNavigate } from "react-router-dom";
 import { DogContext } from "../../context/DogContext";
 import useFetchMoreData from "../fetchData/useFetchNextData";
 import DogAction from "../../Actions/DogAction";
+import useFetchDogsData from "../fetchData/useFetchDogsData";
 
 interface Dog {
   id: string;
@@ -255,55 +256,49 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
     </Toolbar>
   );
 }
-export default function DogSearchResult({
-  initialDogData,
-  nextApi,
-  totalItems,
-}) {
+export default function DogSearchResult({ apiResultObject }) {
+  /**useState hooks */
   const [order, setOrder] = useState<Order>("asc");
   const [orderBy, setOrderBy] = useState<keyof Dog>("breed");
   const [selected, setSelected] = useState<readonly number[]>([]);
   const [page, setPage] = useState(0);
-
-  // const { fetchMoreData } = useFetchMoreData(nextApi);
-
-  const navigate = useNavigate();
-  // console.log(page);
-
-  const { setFavoriteDogs } = useContext(DogContext);
-
-  // console.log(nextApi);
-  console.log(initialDogData);
-  // debugger;
-  const [dogData, setDogData] = useState([]);
-
   const [rowsPerPage, setRowsPerPage] = useState(25);
-  const [nextEndpoint, setNextEndpoint] = useState<string | null>("");
-  const [prevEndpoint, setPrevEndpoint] = useState<string | null>("");
-
-  // const [paginationCount, setPaginationCount] = useState(0);
-
+  const [nextUrl, setNextUrl] = useState<string | null>("");
+  const [prevUrl, setPrevUrl] = useState<string | null>("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [tablesData, setTablesData] = useState([]);
+  const [tablePaginationCount, setTablePaginationCount] = useState<number>(0);
 
-  const fetchMoreData = async (tempNextEndPoint) => {
-    console.log(page);
-    // debugger;
+  /**useContext hooks */
+  const { setFavoriteDogs } = useContext(DogContext);
+
+  /**router dom hooks */
+  const navigate = useNavigate();
+
+  /**custom hooks */
+  const [dogsData] = useFetchDogsData(
+    apiResultObject.resultIds ? apiResultObject.resultIds : ""
+  );
+
+  useEffect(() => {
+    setNextUrl(apiResultObject.next);
+    setTablesData(dogsData);
+    setTablePaginationCount(apiResultObject.total);
+  }, [apiResultObject, dogsData]);
+
+  const fetchMoreData = async (url: string) => {
     try {
       setIsLoading(true);
-      // console.log(nextEndpoint);
-      const nextPageResponse = await DogAction.fetchNextPageData(
-        tempNextEndPoint
-      );
+      const nextPageResponse = await DogAction.fetchNextPageData(url);
 
       const newDogsData = await DogAction.fetchDogs(nextPageResponse.resultIds);
 
       console.log(newDogsData);
-      setDogData(newDogsData);
+      setTablesData(newDogsData);
 
-      // setPaginationCount((prevCount) => prevCount + newDogsData.length);
-      setNextEndpoint(nextPageResponse.next);
-      setPrevEndpoint(nextPageResponse.prev);
+      setNextUrl(nextPageResponse.next);
+      setPrevUrl(nextPageResponse.prev);
 
       setIsLoading(false);
     } catch (err) {
@@ -311,12 +306,6 @@ export default function DogSearchResult({
       setIsLoading(false);
     }
   };
-
-  React.useEffect(() => {
-    setDogData(initialDogData);
-    setNextEndpoint(nextApi);
-    // setPaginationCount((prevCount) => prevCount + initialDogData.length);
-  }, [initialDogData]);
 
   const favoriteDogData = (dogId: string) => {
     setFavoriteDogs((prevFavoriteDogs) => [dogId, ...prevFavoriteDogs]);
@@ -335,7 +324,7 @@ export default function DogSearchResult({
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
-      const newSelected = dogData.map((n) => n.id);
+      const newSelected = tablesData.map((n) => n.id);
       setSelected(newSelected);
       return;
     }
@@ -368,31 +357,28 @@ export default function DogSearchResult({
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
 
-    if (newPage > page && nextEndpoint) {
-      // setTimeout(() => {
-      fetchMoreData(nextEndpoint);
-      // }, 1000);
-    } else if (newPage < page && prevEndpoint) {
-      fetchMoreData(prevEndpoint);
-      console.log(prevEndpoint + "calling prev end point");
+    if (newPage > page && nextUrl) {
+      fetchMoreData(nextUrl);
+    } else if (newPage < page && prevUrl) {
+      fetchMoreData(prevUrl);
+      console.log(prevUrl + "calling prev end point");
     } else {
       console.log("Check the newPage ore event");
     }
-
-    console.log(newPage);
   };
 
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
-    console.log(parseInt(event.target.value, 10));
-    debugger;
   };
 
   const isSelected = (id: number) => selected.indexOf(id) !== -1;
 
-  console.log(dogData);
+  const visibleRows = React.useMemo(
+    () => stableSort(tablesData, getComparator(order, orderBy)),
+    [order, orderBy, page, rowsPerPage, tablesData]
+  );
 
   return (
     <Box sx={{ width: "100%", mt: 4 }}>
@@ -406,10 +392,10 @@ export default function DogSearchResult({
               orderBy={orderBy}
               onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
-              rowCount={dogData.length}
+              rowCount={tablesData.length}
             />
             <TableBody>
-              {dogData.map((dog, index) => {
+              {visibleRows.map((dog, index) => {
                 const isItemSelected = isSelected(dog.id);
                 const labelId = `enhanced-table-checkbox-${index}`;
 
@@ -442,7 +428,6 @@ export default function DogSearchResult({
                     >
                       {dog.name}
                     </TableCell>
-                    {/* img, name, age, zip_code, breed, */}
                     <TableCell align="right">
                       <Box
                         component="img"
@@ -465,17 +450,15 @@ export default function DogSearchResult({
           </Table>
         </TableContainer>
         <TablePagination
-          // sx={{ border: "2px blue groove" }}
           rowsPerPageOptions={[25]}
           component="div"
-          count={totalItems ? totalItems : 0}
+          count={tablePaginationCount}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
-          // slotProps.action.n
         />
-        {/* New "Load More" button */}
+
         {isLoading && <p>Loading...</p>}
         {error && <p>Error: {error}</p>}
       </Paper>
