@@ -6,6 +6,7 @@ export default class DogAction {
       return res.data || {};
     });
   }
+
   static async searchDogs(dogBreedsString, minAge, maxAge, zip_code) {
     return dogService
       .searchDogs(dogBreedsString, minAge, maxAge, zip_code)

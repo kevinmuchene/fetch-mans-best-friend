@@ -1,17 +1,20 @@
-import { Container } from "@mui/material";
+import { Alert, Container } from "@mui/material";
 import DogFilterComponent from "./DogFilterComponent";
-import DogSearchResult from "./DogSearchResult";
+import DogTableResult from "./DogTableResult";
 import { useState } from "react";
 
 function SearchPage() {
   const [apiResultObject, setApiResultObject] = useState({});
-  console.log(apiResultObject);
   return (
     <Container>
       <DogFilterComponent setApiResultObject={setApiResultObject} />
 
-      {apiResultObject.resultIds && (
-        <DogSearchResult apiResultObject={apiResultObject} />
+      {apiResultObject.resultIds ? (
+        <DogTableResult apiResultObject={apiResultObject} />
+      ) : (
+        <Alert severity="info" variant="filled">
+          Click Search Button To Show Data{" "}
+        </Alert>
       )}
     </Container>
   );

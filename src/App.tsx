@@ -5,7 +5,7 @@ import {
   RouterProvider,
 } from "react-router-dom";
 
-import FavDogsComponent from "./components/Pages/FavDogsComponent";
+import FavDogsComponent from "./components/Pages/MatchDogsComponent";
 import RootLayout from "./components/Pages/RootLayout";
 import SignIn from "./components/Pages/SigninCard";
 import SearchPage from "./components/Pages/SearchPage";

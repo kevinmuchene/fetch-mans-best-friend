@@ -6,6 +6,7 @@ const fetchBreeds = "/dogs/breeds";
 const searchAPI = "/dogs/search";
 const fetchDogs = "/dogs";
 const matchFavoriteDog = "/dogs/match";
+const fetchAllDogs = "/dogs/search";
 
 const APIs = {
   getAuthCookie: function () {
@@ -17,6 +18,7 @@ const APIs = {
   fetchBreeds: function () {
     return `${apiMainURL}${fetchBreeds}`;
   },
+
   searchDogs: function (dogBreeds, minAge, maxAge, zip_code) {
     const dogBreedsString = dogBreeds
       .map((breed) => `breeds=${encodeURIComponent(breed)}`)

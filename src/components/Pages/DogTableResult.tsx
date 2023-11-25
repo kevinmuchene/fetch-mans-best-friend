@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { alpha } from "@mui/material/styles";
-import { Box, Button } from "@mui/material";
+import { Alert, Box, Button } from "@mui/material";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -20,7 +20,6 @@ import FilterListIcon from "@mui/icons-material/FilterList";
 import { visuallyHidden } from "@mui/utils";
 import { useNavigate } from "react-router-dom";
 import { DogContext } from "../../context/DogContext";
-import useFetchMoreData from "../fetchData/useFetchNextData";
 import DogAction from "../../Actions/DogAction";
 import useFetchDogsData from "../fetchData/useFetchDogsData";
 
@@ -32,32 +31,6 @@ interface Dog {
   zip_code: string;
   breed: string;
 }
-
-function createData(
-  id: string,
-  img: string,
-  name: string,
-  age: number,
-  zip_code: string,
-  breed: string
-): Dog {
-  return {
-    id,
-    img,
-    name,
-    age,
-    zip_code,
-    breed,
-  };
-}
-
-// const rows = [
-//   createData("1", "image1", "African Hound", 12, "52557", "Hound"),
-//   createData("2", "image2", "Asian Hound", 18, "59874", "Asian"),
-//   createData("3", "image3", "German Sherphed", 30, "12876", "German"),
-//   createData("4", "image3", "Alaska Sherphed", 30, "12876", "German"),
-//   createData("ke", "image3", "Ke Sherphed", 30, "12876", "German"),
-// ];
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -108,8 +81,8 @@ interface HeadCell {
 const headCells: readonly HeadCell[] = [
   {
     id: "name",
-    numeric: false,
-    disablePadding: true,
+    numeric: true,
+    disablePadding: false,
     label: "Dog Name",
   },
   {
@@ -151,14 +124,7 @@ interface EnhancedTableProps {
 }
 
 function EnhancedTableHead(props: EnhancedTableProps) {
-  const {
-    onSelectAllClick,
-    order,
-    orderBy,
-    numSelected,
-    rowCount,
-    onRequestSort,
-  } = props;
+  const { order, orderBy, onRequestSort } = props;
   const createSortHandler =
     (property: keyof Dog) => (event: React.MouseEvent<unknown>) => {
       onRequestSort(event, property);
@@ -167,7 +133,9 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   return (
     <TableHead>
       <TableRow>
-        <TableCell padding="checkbox"></TableCell>
+        <TableCell align="right" padding="checkbox">
+          Favorites
+        </TableCell>
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
@@ -256,7 +224,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
     </Toolbar>
   );
 }
-export default function DogSearchResult({ apiResultObject }) {
+export default function DogTableResult({ apiResultObject }) {
   /**useState hooks */
   const [order, setOrder] = useState<Order>("asc");
   const [orderBy, setOrderBy] = useState<keyof Dog>("breed");
@@ -287,14 +255,13 @@ export default function DogSearchResult({ apiResultObject }) {
     setTablePaginationCount(apiResultObject.total);
   }, [apiResultObject, dogsData]);
 
-  const fetchMoreData = async (url: string) => {
+  const fetchNextData = async (url: string) => {
     try {
       setIsLoading(true);
       const nextPageResponse = await DogAction.fetchNextPageData(url);
 
       const newDogsData = await DogAction.fetchDogs(nextPageResponse.resultIds);
 
-      console.log(newDogsData);
       setTablesData(newDogsData);
 
       setNextUrl(nextPageResponse.next);
@@ -305,10 +272,6 @@ export default function DogSearchResult({ apiResultObject }) {
       setError(err.message);
       setIsLoading(false);
     }
-  };
-
-  const favoriteDogData = (dogId: string) => {
-    setFavoriteDogs((prevFavoriteDogs) => [dogId, ...prevFavoriteDogs]);
   };
 
   const handleRequestSort = (
@@ -337,14 +300,10 @@ export default function DogSearchResult({ apiResultObject }) {
 
     if (selectedIndex === -1) {
       newSelected = newSelected.concat(selected, id);
-      favoriteDogData("" + id);
-      // console.log("added" + id);
     } else if (selectedIndex === 0) {
       newSelected = newSelected.concat(selected.slice(1));
-      // console.log("removed" + id);
     } else if (selectedIndex === selected.length - 1) {
       newSelected = newSelected.concat(selected.slice(0, -1));
-      // console.log("removed" + id);
     } else if (selectedIndex > 0) {
       newSelected = newSelected.concat(
         selected.slice(0, selectedIndex),
@@ -358,9 +317,9 @@ export default function DogSearchResult({ apiResultObject }) {
     setPage(newPage);
 
     if (newPage > page && nextUrl) {
-      fetchMoreData(nextUrl);
+      fetchNextData(nextUrl);
     } else if (newPage < page && prevUrl) {
-      fetchMoreData(prevUrl);
+      fetchNextData(prevUrl);
       console.log(prevUrl + "calling prev end point");
     } else {
       console.log("Check the newPage ore event");
@@ -379,6 +338,13 @@ export default function DogSearchResult({ apiResultObject }) {
     () => stableSort(tablesData, getComparator(order, orderBy)),
     [order, orderBy, page, rowsPerPage, tablesData]
   );
+
+  // console.log(selected);
+
+  const matchMyFavDogs = () => {
+    setFavoriteDogs(selected);
+    navigate("/favoritedogs");
+  };
 
   return (
     <Box sx={{ width: "100%", mt: 4 }}>
@@ -412,7 +378,7 @@ export default function DogSearchResult({ apiResultObject }) {
                   >
                     <TableCell>
                       <Checkbox
-                        color="primary"
+                        color="success"
                         checked={isItemSelected}
                         inputProps={{
                           "aria-labelledby": labelId,
@@ -420,14 +386,7 @@ export default function DogSearchResult({ apiResultObject }) {
                         icon={<FavoriteBorderIcon />}
                       />
                     </TableCell>
-                    <TableCell
-                      component="th"
-                      id={labelId}
-                      scope="row"
-                      padding="none"
-                    >
-                      {dog.name}
-                    </TableCell>
+                    <TableCell align="right">{dog.name}</TableCell>
                     <TableCell align="right">
                       <Box
                         component="img"
@@ -459,10 +418,14 @@ export default function DogSearchResult({ apiResultObject }) {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
 
-        {isLoading && <p>Loading...</p>}
-        {error && <p>Error: {error}</p>}
+        {isLoading && <Alert severity="info">Loading Next Data</Alert>}
+        {error && <Alert severity="info">Error Loading Next Data</Alert>}
       </Paper>
-      <Button variant="contained" onClick={() => navigate("/favoritedogs")}>
+      <Button
+        variant="contained"
+        disabled={selected ? false : true}
+        onClick={() => matchMyFavDogs()}
+      >
         Match My Fav Dogs
       </Button>
     </Box>

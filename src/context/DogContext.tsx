@@ -2,7 +2,7 @@ import React, { createContext, useState } from "react";
 
 export const DogContext = createContext({
   favoriteDogs: [],
-  setFavoriteDogs: () => {},
+  setFavoriteDogs: (newFavoriteDogs) => {},
 });
 
 export const DogProvider = ({ children }) => {

@@ -1,6 +1,6 @@
 import { TextField, Button, Box, Grid, Typography, Paper } from "@mui/material";
 import { useFormik } from "formik";
-import SelectBreedComponent from "../MultiSelectChipComponent";
+import SelectBreedComponent from "../MultiSelectComponent";
 import { useFetchBreeds } from "../fetchData/useFetchBreeds";
 import dogAction from "../../Actions/DogAction";
 
@@ -112,7 +112,7 @@ function DogFilterComponent({ setApiResultObject }) {
           color="success"
           sx={{ mt: 3, mb: 2 }}
         >
-          Filter
+          Search
         </Button>
       </Box>
     </Paper>
