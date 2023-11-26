@@ -14,6 +14,8 @@ interface DogContextType {
   setAiGeneratedActivities: (activities: any) => void;
   matchDogData: Dog[];
   setMatchDogData: (dogData: Dog[]) => void;
+  matchLocation: string[];
+  setMatchLocation: (locationData: any) => void;
 }
 const defaultContextValue: DogContextType = {
   favoriteDogsId: [],
@@ -22,6 +24,8 @@ const defaultContextValue: DogContextType = {
   setAiGeneratedActivities: () => {},
   matchDogData: [],
   setMatchDogData: () => {},
+  matchLocation: [],
+  setMatchLocation: () => {},
 };
 
 interface DogProviderProps {
@@ -34,6 +38,7 @@ export const DogProvider: React.FC<DogProviderProps> = ({ children }) => {
   const [favoriteDogsId, setFavoriteDogsId] = useState<string[]>([]);
   const [aiGeneratedActivities, setAiGeneratedActivities] = useState<any>({});
   const [matchDogData, setMatchDogData] = useState<Dog[]>([]);
+  const [matchLocation, setMatchLocation] = useState<any>([]);
 
   return (
     <DogContext.Provider
@@ -44,6 +49,8 @@ export const DogProvider: React.FC<DogProviderProps> = ({ children }) => {
         setAiGeneratedActivities,
         matchDogData,
         setMatchDogData,
+        matchLocation,
+        setMatchLocation,
       }}
     >
       {children}

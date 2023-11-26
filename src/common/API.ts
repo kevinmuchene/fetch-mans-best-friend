@@ -1,5 +1,4 @@
 const apiMainURL = "https://frontend-take-home-service.fetch.com";
-
 const authLogInService = "/auth/login";
 const authLogOutService = "/auth/logout";
 const fetchBreeds = "/dogs/breeds";
@@ -19,23 +18,28 @@ const APIs = {
     return `${apiMainURL}${fetchBreeds}`;
   },
 
-  searchDogs: function (dogBreeds, minAge, maxAge, zip_code) {
+  searchDogs: function (
+    dogBreeds: string[],
+    minAge: string,
+    maxAge: string,
+    zip_code: string[]
+  ) {
     const dogBreedsString = dogBreeds
       .map((breed) => `breeds=${encodeURIComponent(breed)}`)
       .join("&");
 
-    const finalURL = `${apiMainURL}${searchAPI}?ageMin=${minAge}&ageMax=${maxAge}${
+    const url = `${apiMainURL}${searchAPI}?ageMin=${minAge}&ageMax=${maxAge}${
       zip_code ? `&zipCodes=${zip_code}` : ""
-    }${dogBreedsString ? `&${dogBreedsString}&size=20` : ""}`;
+    }${dogBreedsString ? `&${dogBreedsString}` : ""}&size=20`;
 
-    console.log(finalURL);
+    console.log(url);
 
-    return finalURL;
+    return url;
   },
   fetchDogs: function () {
     return `${apiMainURL}${fetchDogs}`;
   },
-  fetchNextPageData: function (nextAPI) {
+  fetchNextPageData: function (nextAPI: string) {
     return `${apiMainURL}${nextAPI}`;
   },
   matchFavoriteDog: function () {
@@ -47,4 +51,3 @@ const APIs = {
 };
 
 export default APIs;
-// &minAge=${minAge}&maxAge=${maxAge}&zipcode=${zipcode}`

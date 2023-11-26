@@ -1,5 +1,5 @@
 import { Container, Grid } from "@mui/material";
-import LoginCard from "./Pages/SigninCard";
+import LoginCard from "./SigninCard";
 
 function Login() {
   return (

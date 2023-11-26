@@ -1,14 +1,23 @@
 import { useEffect, useState } from "react";
 import dogAction from "../../Actions/DogAction";
 
-const useFetchDogsData = (dogsId: []) => {
-  const [dogsData, setDogsData] = useState([]);
+interface dogsData {
+  img: string;
+  name: string;
+  age: number;
+  breed: string;
+  zip_code: string;
+  id: string;
+}
+
+const useFetchDogsData = (dogsId: string[]) => {
+  const [dogsData, setDogsData] = useState<dogsData[]>([]);
   useEffect(() => {
     if (dogsId) {
       dogAction
         .fetchDogs(dogsId)
         .then((res) => {
-          console.log(res);
+          // console.log(res);
           setDogsData(res);
         })
         .catch((error) => {

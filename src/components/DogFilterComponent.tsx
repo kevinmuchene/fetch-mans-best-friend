@@ -1,13 +1,23 @@
+import { Dispatch, SetStateAction } from "react";
 import { TextField, Button, Box, Grid, Typography, Paper } from "@mui/material";
 import { useFormik } from "formik";
-import SelectBreedComponent from "../MultiSelectComponent";
-import { useFetchBreeds } from "../fetchData/useFetchBreeds";
-import dogAction from "../../Actions/DogAction";
+import SelectBreedComponent from "./MultiSelectComponent";
+import { useFetchBreeds } from "./custom-hooks/useFetchBreeds";
+import dogAction from "../Actions/DogAction";
 
-function DogFilterComponent({ setApiResultObject }) {
+interface apiResultObject {
+  next: string;
+  prev: string;
+  resultIds: string[];
+  total: number;
+}
+
+interface DogFilterComponentProps {
+  setApiResultObject: Dispatch<SetStateAction<apiResultObject>>;
+}
+
+function DogFilterComponent({ setApiResultObject }: DogFilterComponentProps) {
   const [breeds] = useFetchBreeds();
-
-  // console.log(breeds);
 
   const formik = useFormik({
     initialValues: {
@@ -19,8 +29,6 @@ function DogFilterComponent({ setApiResultObject }) {
 
     onSubmit: (values, { resetForm }) => {
       console.log(values);
-      // const dogBreedsString = dogBreeds.map(breed => `breeds=${encodeURIComponent(breed)}`).join("&");
-      // setApiResultObject(afterSearchData);
       dogAction
         .searchDogs(
           values.breeds,
@@ -29,7 +37,7 @@ function DogFilterComponent({ setApiResultObject }) {
           values.zipCodes.split(",").join("&")
         )
         .then((res) => {
-          console.log(res);
+          // console.log(res);
           setApiResultObject(res);
         })
         .catch((err) => {
@@ -83,7 +91,7 @@ function DogFilterComponent({ setApiResultObject }) {
           <Grid item xs={12} md={6}>
             <SelectBreedComponent
               selectedItems={formik.values.breeds}
-              setSelectedItems={(field, value) =>
+              setSelectedItems={(field: string, value: any) =>
                 formik.setFieldValue(field, value)
               }
               items={breeds}

@@ -8,7 +8,7 @@ import { Checkbox, ListItemText } from "@mui/material";
 const MenuProps = {
   PaperProps: {
     style: {
-      maxHeight: "20vh",
+      maxHeight: "40vh",
       overflow: "auto",
     },
   },

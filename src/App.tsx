@@ -5,10 +5,10 @@ import {
   RouterProvider,
 } from "react-router-dom";
 
-import FavDogsComponent from "./components/Pages/MatchDogsComponent";
-import RootLayout from "./components/Pages/RootLayout";
-import SignIn from "./components/Pages/SigninCard";
-import SearchPage from "./components/Pages/SearchPage";
+import FavDogsComponent from "./components/MatchDogsComponent";
+import RootLayout from "./components/RootLayout";
+import SignIn from "./components/SigninCard";
+import SearchPage from "./components/SearchPage";
 import { DogProvider } from "./context/DogContext";
 
 const router = createBrowserRouter(

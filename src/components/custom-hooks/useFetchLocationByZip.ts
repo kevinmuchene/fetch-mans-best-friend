@@ -1,18 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect, useContext } from "react";
 import locationAction from "../../Actions/LocationAction";
+import { DogContext } from "../../context/DogContext";
 
 export const useFetchLocationByZip = (zipsCode: []) => {
-  const [locationData, setLocationData] = useState([]);
+  const { setMatchLocation } = useContext(DogContext);
 
   useEffect(() => {
     if (zipsCode[0]) {
-      debugger;
-      console.log(zipsCode);
       locationAction
         .fetchLocationByZip(zipsCode)
         .then((res) => {
-          console.log(res);
-          setLocationData(res);
+          setMatchLocation(res);
         })
         .catch((error) => {
           console.log(error);
@@ -21,6 +19,4 @@ export const useFetchLocationByZip = (zipsCode: []) => {
       console.log("Zipcodes is empty or data is already present");
     }
   }, [zipsCode]);
-
-  return [locationData];
 };

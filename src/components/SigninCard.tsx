@@ -5,11 +5,11 @@ import { Box, Typography } from "@mui/material";
 import Container from "@mui/material/Container";
 import { useFormik } from "formik";
 import { useNavigate } from "react-router-dom";
-import authAction from "../../Actions/AuthAction";
+import authAction from "../Actions/AuthAction";
 import {
   CustomErrorDiv,
   signInValidationSchema,
-} from "../../common/YupValidation";
+} from "../common/YupValidation";
 import * as Yup from "yup";
 
 const SignIn = function SiginCard() {

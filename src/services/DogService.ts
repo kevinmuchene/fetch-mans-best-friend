@@ -6,21 +6,26 @@ export default class DogService {
     return defaultRestApi.get(APIs.fetchBreeds());
   };
 
-  static searchDogs = (dogBreedsString, minAge, maxAge, zip_code) => {
+  static searchDogs = (
+    dogBreedsString: string[],
+    minAge: string,
+    maxAge: string,
+    zip_code: string[]
+  ) => {
     return defaultRestApi.get(
       APIs.searchDogs(dogBreedsString, minAge, maxAge, zip_code)
     );
   };
 
-  static fetchDogs = (data) => {
+  static fetchDogs = (data: []) => {
     return defaultRestApi.post(APIs.fetchDogs(), data);
   };
 
-  static fetchNextPageData = (nextAPI) => {
+  static fetchNextPageData = (nextAPI: string) => {
     return defaultRestApi.get(APIs.fetchNextPageData(nextAPI));
   };
 
-  static fetchFavoriteMatch = (data) => {
+  static fetchFavoriteMatch = (data: []) => {
     return defaultRestApi.post(APIs.matchFavoriteDog(), data);
   };
 }

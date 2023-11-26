@@ -1,4 +1,10 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, {
+  useContext,
+  useEffect,
+  useState,
+  Dispatch,
+  SetStateAction,
+} from "react";
 import { alpha } from "@mui/material/styles";
 import { Alert, Box, Button } from "@mui/material";
 import Table from "@mui/material/Table";
@@ -19,9 +25,9 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import { visuallyHidden } from "@mui/utils";
 import { useNavigate } from "react-router-dom";
-import { DogContext } from "../../context/DogContext";
-import DogAction from "../../Actions/DogAction";
-import useFetchDogsData from "../fetchData/useFetchDogsData";
+import { DogContext } from "../context/DogContext";
+import DogAction from "../Actions/DogAction";
+import useFetchDogsData from "./custom-hooks/useFetchDogsData";
 
 interface Dog {
   id: string;
@@ -30,6 +36,16 @@ interface Dog {
   age: number;
   zip_code: string;
   breed: string;
+}
+interface apiResultObject {
+  next: string;
+  prev: string;
+  resultIds: string[];
+  total: number;
+}
+
+interface ResultObjectComponentProps {
+  apiResultObject: apiResultObject;
 }
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
@@ -224,7 +240,10 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
     </Toolbar>
   );
 }
-export default function DogTableResult({ apiResultObject }) {
+
+export default function DogTableResult({
+  apiResultObject,
+}: ResultObjectComponentProps) {
   /**useState hooks */
   const [order, setOrder] = useState<Order>("asc");
   const [orderBy, setOrderBy] = useState<keyof Dog>("breed");
@@ -235,18 +254,18 @@ export default function DogTableResult({ apiResultObject }) {
   const [prevUrl, setPrevUrl] = useState<string | null>("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [tablesData, setTablesData] = useState([]);
+  const [tablesData, setTablesData] = useState<Dog[]>([]);
   const [tablePaginationCount, setTablePaginationCount] = useState<number>(0);
 
   /**useContext hooks */
-  const { setFavoriteDogs } = useContext(DogContext);
+  const { setFavoriteDogsId } = useContext(DogContext);
 
   /**router dom hooks */
   const navigate = useNavigate();
 
   /**custom hooks */
   const [dogsData] = useFetchDogsData(
-    apiResultObject.resultIds ? apiResultObject.resultIds : ""
+    apiResultObject.resultIds ? apiResultObject.resultIds : []
   );
 
   useEffect(() => {
@@ -268,7 +287,7 @@ export default function DogTableResult({ apiResultObject }) {
       setPrevUrl(nextPageResponse.prev);
 
       setIsLoading(false);
-    } catch (err) {
+    } catch (err: any) {
       setError(err.message);
       setIsLoading(false);
     }
@@ -332,7 +351,7 @@ export default function DogTableResult({ apiResultObject }) {
     setRowsPerPage(parseInt(event.target.value, 10));
   };
 
-  const isSelected = (id: number) => selected.indexOf(id) !== -1;
+  const isSelected = (id: string) => selected.indexOf(id) !== -1;
 
   const visibleRows = React.useMemo(
     () => stableSort(tablesData, getComparator(order, orderBy)),
@@ -342,7 +361,7 @@ export default function DogTableResult({ apiResultObject }) {
   // console.log(selected);
 
   const matchMyFavDogs = () => {
-    setFavoriteDogs(selected);
+    setFavoriteDogsId(selected);
     navigate("/favoritedogs");
   };
 
@@ -409,7 +428,7 @@ export default function DogTableResult({ apiResultObject }) {
           </Table>
         </TableContainer>
         <TablePagination
-          rowsPerPageOptions={[25]}
+          rowsPerPageOptions={[20]}
           component="div"
           count={tablePaginationCount}
           rowsPerPage={rowsPerPage}
