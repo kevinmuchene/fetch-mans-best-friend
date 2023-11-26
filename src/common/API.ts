@@ -6,7 +6,7 @@ const fetchBreeds = "/dogs/breeds";
 const searchAPI = "/dogs/search";
 const fetchDogs = "/dogs";
 const matchFavoriteDog = "/dogs/match";
-const fetchAllDogs = "/dogs/search";
+const getLocationByZip = "/locations";
 
 const APIs = {
   getAuthCookie: function () {
@@ -26,7 +26,7 @@ const APIs = {
 
     const finalURL = `${apiMainURL}${searchAPI}?ageMin=${minAge}&ageMax=${maxAge}${
       zip_code ? `&zipCodes=${zip_code}` : ""
-    }${dogBreedsString ? `&${dogBreedsString}` : ""}`;
+    }${dogBreedsString ? `&${dogBreedsString}&size=20` : ""}`;
 
     console.log(finalURL);
 
@@ -40,6 +40,9 @@ const APIs = {
   },
   matchFavoriteDog: function () {
     return `${apiMainURL}${matchFavoriteDog}`;
+  },
+  fetchLocationByZip: function () {
+    return `${apiMainURL}${getLocationByZip}`;
   },
 };
 

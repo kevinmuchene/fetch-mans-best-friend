@@ -6,8 +6,8 @@ import Button from "@mui/material/Button";
 import { Typography, Grid } from "@mui/material";
 import AutoStoriesIcon from "@mui/icons-material/AutoStories";
 
-export default function DogCard({ data }) {
-  // console.log(data);
+export default function DogCard({ data, locationData }) {
+  console.log(locationData);
   return (
     <Card sx={{ maxWidth: "50%" }}>
       <CardMedia sx={{ height: 140 }} image={data.img} title="green iguana" />
@@ -31,6 +31,31 @@ export default function DogCard({ data }) {
           <Grid item md={6} xs={6}>
             <Typography variant="body2" color="text.secondary">
               Zipcode: {data.zip_code}
+            </Typography>
+          </Grid>
+          <Grid item md={6} xs={6}>
+            <Typography variant="body2" color="text.secondary">
+              City: {locationData.city}
+            </Typography>
+          </Grid>
+          <Grid item md={6} xs={6}>
+            <Typography variant="body2" color="text.secondary">
+              County:{locationData.county}
+            </Typography>
+          </Grid>
+          <Grid item md={6} xs={6}>
+            <Typography variant="body2" color="text.secondary">
+              Latitude: {locationData.latitude}
+            </Typography>
+          </Grid>
+          <Grid item md={6} xs={6}>
+            <Typography variant="body2" color="text.secondary">
+              Longitude: {locationData.longitude}
+            </Typography>
+          </Grid>
+          <Grid item md={6} xs={6}>
+            <Typography variant="body2" color="text.secondary">
+              State: {locationData.state}
             </Typography>
           </Grid>
         </Grid>

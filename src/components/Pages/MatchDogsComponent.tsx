@@ -4,13 +4,18 @@ import { useContext, useEffect, useState } from "react";
 import { DogContext } from "../../context/DogContext";
 import DogAction from "../../Actions/DogAction";
 import { useNavigate } from "react-router-dom";
+import { useFetchLocationByZip } from "../fetchData/useFetchLocationByZip";
 
 function FavDogsComponent() {
   const { favoriteDogs } = useContext(DogContext);
 
   const [favoriteDog, setFavoriteDog] = useState([]);
 
+  const [zipcodes, setZipcodes] = useState([]);
+
   const navigation = useNavigate();
+
+  const [locationData] = useFetchLocationByZip(zipcodes);
 
   useEffect(() => {
     const fetchFavoriteMatchAndDogs = async () => {
@@ -25,8 +30,9 @@ function FavDogsComponent() {
           matchId.push(matchResponse.match);
 
           const dogsResponse = await DogAction.fetchDogs(matchId);
-
+          console.log(dogsResponse);
           setFavoriteDog(dogsResponse);
+          setZipcodes([dogsResponse[0].zip_code]);
         } catch (err) {
           console.log(err);
         }
@@ -45,7 +51,9 @@ function FavDogsComponent() {
           </Typography>
         </Grid>
         <Grid item md={12}>
-          {favoriteDog.length > 0 && <DogCard data={favoriteDog[0]} />}
+          {favoriteDog.length > 0 && (
+            <DogCard data={favoriteDog[0]} locationData={locationData[0]} />
+          )}
         </Grid>
         <Grid item md={12}>
           <Button onClick={() => navigation("/dogs")}>Back</Button>
