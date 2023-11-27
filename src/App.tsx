@@ -9,7 +9,9 @@ import FavDogsComponent from "./components/MatchDogsComponent";
 import RootLayout from "./components/RootLayout";
 import SignIn from "./components/SigninCard";
 import SearchPage from "./components/SearchPage";
-import { DogProvider } from "./context/DogContext";
+import { useFetchBreeds } from "./components/custom-hooks/useFetchBreeds";
+import { useEffect, useContext } from "react";
+import { DogContext } from "./context/DogContext";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -24,10 +26,17 @@ const router = createBrowserRouter(
 );
 
 function App() {
+  const [breedsData] = useFetchBreeds();
+  const { setBreedData } = useContext(DogContext);
+
+  useEffect(() => {
+    setBreedData(breedsData);
+  }, [breedsData]);
+
   return (
-    <DogProvider>
+    <>
       <RouterProvider router={router}></RouterProvider>
-    </DogProvider>
+    </>
   );
 }
 
