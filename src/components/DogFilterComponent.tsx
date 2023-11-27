@@ -2,7 +2,6 @@ import { Dispatch, SetStateAction } from "react";
 import { TextField, Button, Box, Grid, Typography, Paper } from "@mui/material";
 import { useFormik } from "formik";
 import SelectBreedComponent from "./MultiSelectComponent";
-import { useFetchBreeds } from "./custom-hooks/useFetchBreeds";
 import dogAction from "../Actions/DogAction";
 import * as Yup from "yup";
 import { CustomErrorDiv, ageValidationSchema } from "../common/YupValidation";
@@ -18,6 +17,16 @@ interface DogFilterComponentProps {
   setApiResultObject: Dispatch<SetStateAction<apiResultObject>>;
 }
 
+function processZipCodes(input: string) {
+  const zipCodes = input.split(" ");
+
+  const validZipCodes = zipCodes.filter(
+    (zipCode) => zipCode.length === 5 && /^\d+$/.test(zipCode)
+  );
+
+  return validZipCodes;
+}
+
 function DogFilterComponent({ setApiResultObject }: DogFilterComponentProps) {
   const formik = useFormik({
     initialValues: {
@@ -29,15 +38,13 @@ function DogFilterComponent({ setApiResultObject }: DogFilterComponentProps) {
     validationSchema: Yup.object(ageValidationSchema),
     onSubmit: (values, { resetForm }) => {
       console.log(values);
+
+      const validZipCodes = processZipCodes(values.zipCodes);
       dogAction
-        .searchDogs(
-          values.breeds,
-          values.ageMin,
-          values.ageMax,
-          values.zipCodes.split(",").join("&")
-        )
+        .searchDogs(values.breeds, values.ageMin, values.ageMax, validZipCodes)
         .then((res) => {
-          // console.log(res);
+          // debugger;
+          console.log(res);
           setApiResultObject(res);
         })
         .catch((err) => {
@@ -77,7 +84,7 @@ function DogFilterComponent({ setApiResultObject }: DogFilterComponentProps) {
               fullWidth
               color="warning"
               name="zipCodes"
-              label="Enter zipcode/zipcodes seprated by comma"
+              label="Enter One or Many Zipcodes"
               id="zipCodes"
               autoComplete="zipCodes"
               value={formik.values.zipCodes}
