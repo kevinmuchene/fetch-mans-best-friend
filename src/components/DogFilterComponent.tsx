@@ -65,6 +65,29 @@ function DogFilterComponent({ setApiResultObject }: DogFilterComponentProps) {
       >
         <Grid container spacing={2}>
           <Grid item xs={12} md={6}>
+            <SelectBreedComponent
+              selectedItems={formik.values.breeds}
+              setSelectedItems={(field: string, value: any) =>
+                formik.setFieldValue(field, value)
+              }
+              items={breeds}
+              label={"Breed"}
+            />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <TextField
+              fullWidth
+              color="warning"
+              name="zipCodes"
+              label="Enter zipcode/zipcodes seprated by comma"
+              id="zipCodes"
+              autoComplete="zipCodes"
+              value={formik.values.zipCodes}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+            />
+          </Grid>
+          <Grid item xs={12} md={6}>
             <TextField
               fullWidth
               color="warning"
@@ -98,39 +121,15 @@ function DogFilterComponent({ setApiResultObject }: DogFilterComponentProps) {
               <CustomErrorDiv>{formik.errors.ageMax}</CustomErrorDiv>
             ) : null}
           </Grid>
-          <Grid item xs={12} md={6}>
-            <SelectBreedComponent
-              selectedItems={formik.values.breeds}
-              setSelectedItems={(field: string, value: any) =>
-                formik.setFieldValue(field, value)
-              }
-              items={breeds}
-              label={"Breed"}
-            />
-          </Grid>
-
-          <Grid item xs={12} md={6}>
-            <TextField
-              fullWidth
-              color="warning"
-              name="zipCodes"
-              label="Enter zipcode/zipcodes seprated by comma"
-              id="zipCodes"
-              autoComplete="zipCodes"
-              value={formik.values.zipCodes}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-            />
-          </Grid>
         </Grid>
         <Button
           type="submit"
           fullWidth
-          variant="outlined"
+          variant="contained"
           color="success"
           sx={{ mt: 3, mb: 2 }}
         >
-          Search
+          Filter
         </Button>
       </Box>
     </Paper>
