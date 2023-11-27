@@ -27,14 +27,18 @@ const APIs = {
     const dogBreedsString = dogBreeds
       .map((breed) => `breeds=${encodeURIComponent(breed)}`)
       .join("&");
-
     const url = `${apiMainURL}${searchAPI}?ageMin=${minAge}&ageMax=${maxAge}${
-      zip_code ? `&zipCodes=${zip_code}` : ""
+      zip_code.length ? `&zipCodes=${zip_code}` : ""
     }${dogBreedsString ? `&${dogBreedsString}` : ""}&size=20`;
 
     console.log(url);
 
     return url;
+  },
+
+  fetchAllDogs: function () {
+    // return `${apiMainURL}${searchAPI}&size=20`;
+    return `${apiMainURL}${searchAPI}?&size=20`;
   },
   fetchDogs: function () {
     return `${apiMainURL}${fetchDogs}`;

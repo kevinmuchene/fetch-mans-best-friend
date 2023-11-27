@@ -7,6 +7,12 @@ export default class DogAction {
     });
   }
 
+  static async fetchAllDogs() {
+    return dogService.fetchAllDogs().then((res) => {
+      return res.data || {};
+    });
+  }
+
   static async searchDogs(
     dogBreedsString: [],
     minAge: number,

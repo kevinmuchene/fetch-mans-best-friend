@@ -4,8 +4,8 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import { Checkbox, ListItemText } from "@mui/material";
-import React from "react";
-import { useFetchBreeds } from "./custom-hooks/useFetchBreeds";
+import React, { useContext } from "react";
+import { DogContext } from "../context/DogContext";
 
 const MenuProps = {
   PaperProps: {
@@ -22,7 +22,8 @@ const MultiSelectComponent = React.memo(function MultiSelectComponent({
   // items,
   label,
 }) {
-  const [breedsData] = useFetchBreeds();
+  const { breedData } = useContext(DogContext);
+  // const [breedsData] = useFetchBreeds();
   const handleChange = React.useCallback((event) => {
     setSelectedItems("breeds", event.target.value);
   }, []);
@@ -42,7 +43,7 @@ const MultiSelectComponent = React.memo(function MultiSelectComponent({
         renderValue={(selected) => selected.join(", ")}
         MenuProps={MenuProps}
       >
-        {breedsData.map((item) => (
+        {breedData.map((item) => (
           <MenuItem key={item} value={item}>
             <Checkbox checked={selectedItems.indexOf(item) > -1} />
             <ListItemText primary={item} />
