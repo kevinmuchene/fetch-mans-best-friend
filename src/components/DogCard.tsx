@@ -3,13 +3,22 @@ import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Button from "@mui/material/Button";
-import { Typography, Grid, Box } from "@mui/material";
+import { Typography, Grid, Box, styled } from "@mui/material";
 import { useState, useEffect, useContext } from "react";
 import BreedBasedActivity from "./BreedBasedActvity";
 import useGenerateActivities from "../common/openAI/TransformAIResponseObject";
 import { DogContext } from "../context/DogContext";
 import { useNavigate } from "react-router-dom";
 import { useFetchLocationByZip } from "./custom-hooks/useFetchLocationByZip";
+
+const StyledTypography = styled(Typography)(() => ({
+  fontWeight: "bold",
+  fontSize: "1rem",
+  letterSpacing: "0.1rem",
+  textTransform: "uppercase",
+  marginBottom: "0.5rem",
+  display: "inline-block",
+}));
 
 export default function DogCard({ zipcode }) {
   const [open, setOpen] = useState<boolean>(false);
@@ -33,8 +42,7 @@ export default function DogCard({ zipcode }) {
 
   useEffect(() => {
     generatedActivityByAI(matchDogData[0]);
-    // debugger;
-  }, [matchDogData]);
+  }, []);
 
   return (
     <>
@@ -44,7 +52,7 @@ export default function DogCard({ zipcode }) {
         aiGeneratedActivities={aiGeneratedActivities}
         dogName={matchDogData[0].name}
       />
-      <Box display={"flex"} justifyContent={"center"}>
+      <Box display={"flex"} justifyContent={"center"} sx={{ my: 3 }}>
         <Card>
           <CardMedia
             sx={{ height: 340 }}
@@ -54,60 +62,63 @@ export default function DogCard({ zipcode }) {
           <CardContent>
             <Grid container spacing={2}>
               <Grid item md={6} xs={6}>
-                <Typography variant="body2" color="text.secondary">
+                <StyledTypography>
                   Name: {matchDogData[0].name}
-                </Typography>
+                </StyledTypography>
               </Grid>
               <Grid item md={6} xs={6}>
-                <Typography variant="body2" color="text.secondary">
-                  Age: {matchDogData[0].age}
-                </Typography>
+                <StyledTypography>Age: {matchDogData[0].age}</StyledTypography>
               </Grid>
               <Grid item md={6} xs={6}>
-                <Typography variant="body2" color="text.secondary">
+                <StyledTypography>
                   Breed: {matchDogData[0].breed}
-                </Typography>
+                </StyledTypography>
               </Grid>
               <Grid item md={6} xs={6}>
-                <Typography variant="body2" color="text.secondary">
+                <StyledTypography>
                   Zipcode: {matchDogData[0].zip_code}
-                </Typography>
+                </StyledTypography>
               </Grid>
             </Grid>
             {matchLocation.length > 0 ? (
-              <Grid container spacing={2} marginTop={1}>
+              <Grid container spacing={2} marginTop={"0.1rem"}>
                 <Grid item md={6} xs={6}>
-                  <Typography variant="body2" color="text.secondary">
+                  <StyledTypography>
                     City: {matchLocation[0].city}
-                  </Typography>
+                  </StyledTypography>
                 </Grid>
                 <Grid item md={6} xs={6}>
-                  <Typography variant="body2" color="text.secondary">
+                  <StyledTypography>
                     County:{matchLocation[0].county}
-                  </Typography>
+                  </StyledTypography>
                 </Grid>
                 <Grid item md={6} xs={6}>
-                  <Typography variant="body2" color="text.secondary">
+                  <StyledTypography>
                     Latitude: {matchLocation[0].latitude}
-                  </Typography>
+                  </StyledTypography>
                 </Grid>
                 <Grid item md={6} xs={6}>
-                  <Typography variant="body2" color="text.secondary">
+                  <StyledTypography>
                     Longitude: {matchLocation[0].longitude}
-                  </Typography>
+                  </StyledTypography>
                 </Grid>
                 <Grid item md={6} xs={6}>
-                  <Typography variant="body2" color="text.secondary">
+                  <StyledTypography>
                     State: {matchLocation[0].state}
-                  </Typography>
+                  </StyledTypography>
                 </Grid>
               </Grid>
             ) : null}
           </CardContent>
-          <CardActions>
+          <CardActions sx={{ justifyContent: "center", py: 2 }}>
             <Button
               disabled={isObjectEmpty(aiGeneratedActivities) ? true : false}
               onClick={handleClickOpen}
+              variant={
+                isObjectEmpty(aiGeneratedActivities) ? "outlined" : "contained"
+              }
+              sx={{ borderRadius: 1 }}
+              color="success"
             >
               Activities for {matchDogData[0].name}
             </Button>
@@ -119,7 +130,9 @@ export default function DogCard({ zipcode }) {
         </Card>
       </Box>
       <Box display={"flex"} justifyContent={"center"} margin={"1em"}>
-        <Button onClick={() => navigation("/dogs")}>Back</Button>
+        <Button onClick={() => navigation("/dogs")} sx={{ borderRadius: 1 }}>
+          Back
+        </Button>
       </Box>
     </>
   );
