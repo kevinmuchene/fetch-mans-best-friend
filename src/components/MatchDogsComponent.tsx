@@ -9,28 +9,28 @@ function FavDogsComponent() {
     useContext(DogContext);
 
   const [zipcode, setZipcode] = useState([]);
-
   useEffect(() => {
-    const fetchFavoriteMatchDog = async () => {
-      try {
-        const matchResponse = await DogAction.fetchFavoriteMatch(
-          favoriteDogsId
-        );
+    if (favoriteDogsId.length > 0) {
+      const fetchFavoriteMatchDog = async () => {
+        try {
+          const matchResponse = await DogAction.fetchFavoriteMatch(
+            favoriteDogsId
+          );
 
-        const matchId = [];
+          const matchId = [];
 
-        matchId.push(matchResponse.match);
+          matchId.push(matchResponse.match);
 
-        const dogsResponse = await DogAction.fetchDogs(matchId);
+          const dogsResponse = await DogAction.fetchDogs(matchId);
 
-        setMatchDogData(dogsResponse);
-        setZipcode([dogsResponse[0].zip_code]);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-
-    fetchFavoriteMatchDog();
+          setMatchDogData(dogsResponse);
+          setZipcode([dogsResponse[0].zip_code]);
+        } catch (err) {
+          console.log(err);
+        }
+      };
+      fetchFavoriteMatchDog();
+    }
   }, [favoriteDogsId]);
 
   return (
@@ -38,7 +38,7 @@ function FavDogsComponent() {
       <Grid container justifyContent="center" alignItems="center">
         <Grid item md={12}>
           <Typography variant="h4" align="center" color="orange" sx={{ m: 3 }}>
-            Match For You
+            A Match For You
           </Typography>
         </Grid>
         <Grid item md={12}>
