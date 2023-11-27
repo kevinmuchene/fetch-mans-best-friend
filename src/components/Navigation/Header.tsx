@@ -17,11 +17,11 @@ export default function Header() {
       .signout()
       .then((res) => {
         console.log(res + "successfully signed out user");
-        navigate("/");
       })
       .catch((err) => {
         console.log("Error in signing out user" + err);
       });
+    navigate("/");
   };
   return (
     <Box sx={{ flexGrow: 1 }}>
