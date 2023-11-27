@@ -19,8 +19,6 @@ interface DogFilterComponentProps {
 }
 
 function DogFilterComponent({ setApiResultObject }: DogFilterComponentProps) {
-  const [breeds] = useFetchBreeds();
-
   const formik = useFormik({
     initialValues: {
       breeds: [],
@@ -49,7 +47,7 @@ function DogFilterComponent({ setApiResultObject }: DogFilterComponentProps) {
       resetForm();
     },
   });
-
+  console.log("Dog filter component");
   return (
     <Paper sx={{ width: "100%", mb: 2 }}>
       <Box sx={{ mt: 1 }}>
@@ -70,7 +68,7 @@ function DogFilterComponent({ setApiResultObject }: DogFilterComponentProps) {
               setSelectedItems={(field: string, value: any) =>
                 formik.setFieldValue(field, value)
               }
-              items={breeds}
+              // items={breedsData}
               label={"Breed"}
             />
           </Grid>

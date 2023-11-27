@@ -2,21 +2,21 @@ import { useEffect, useState } from "react";
 import dogAction from "../../Actions/DogAction";
 
 export const useFetchBreeds = () => {
-  const [breeds, setBreeds] = useState([]);
+  const [breedsData, setBreedsData] = useState([]);
 
   useEffect(() => {
-    if (breeds.length === 0) {
+    if (breedsData.length === 0) {
       console.log("Breed request was made");
       dogAction
         .fetchBreed()
-        .then((res) => setBreeds(res))
+        .then((res) => setBreedsData(res))
         .catch((err) => console.log(err));
     } else {
       console.log("Breeds data already available");
     }
-  }, [breeds]);
+  }, []);
 
-  return [breeds];
+  return [breedsData];
 };
 /**
  * 

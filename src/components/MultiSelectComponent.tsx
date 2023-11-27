@@ -4,48 +4,53 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import { Checkbox, ListItemText } from "@mui/material";
+import React from "react";
+import { useFetchBreeds } from "./custom-hooks/useFetchBreeds";
 
 const MenuProps = {
   PaperProps: {
     style: {
       maxHeight: "40vh",
-      overflow: "auto",
+      // overflow: "auto",
     },
   },
 };
 
-export default function MultiSelectComponent({
+const MultiSelectComponent = React.memo(function MultiSelectComponent({
   selectedItems = [],
   setSelectedItems,
-  items,
+  // items,
   label,
 }) {
-  const handleChange = (event) => {
+  const [breedsData] = useFetchBreeds();
+  const handleChange = React.useCallback((event) => {
     setSelectedItems("breeds", event.target.value);
-  };
+  }, []);
+
+  console.log("Multi-select component");
 
   return (
-    <div>
-      <FormControl sx={{ width: "100%" }} size="medium">
-        <InputLabel id="multiple-checkbox-label">{label}</InputLabel>
-        <Select
-          labelId="multiple-checkbox-label"
-          id="multiple-checkbox"
-          multiple
-          value={selectedItems}
-          onChange={handleChange}
-          input={<OutlinedInput id="select-multiple-checkbox" label="Tag" />}
-          renderValue={(selected) => selected.join(", ")}
-          MenuProps={MenuProps}
-        >
-          {items.map((item) => (
-            <MenuItem key={item} value={item}>
-              <Checkbox checked={selectedItems.indexOf(item) > -1} />
-              <ListItemText primary={item} />
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-    </div>
+    <FormControl sx={{ width: "100%" }} size="medium">
+      <InputLabel id="multiple-checkbox-label">{label}</InputLabel>
+      <Select
+        labelId="multiple-checkbox-label"
+        id="multiple-checkbox"
+        multiple
+        value={selectedItems}
+        onChange={handleChange}
+        input={<OutlinedInput id="select-multiple-checkbox" label="Tag" />}
+        renderValue={(selected) => selected.join(", ")}
+        MenuProps={MenuProps}
+      >
+        {breedsData.map((item) => (
+          <MenuItem key={item} value={item}>
+            <Checkbox checked={selectedItems.indexOf(item) > -1} />
+            <ListItemText primary={item} />
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
   );
-}
+});
+
+export default MultiSelectComponent;

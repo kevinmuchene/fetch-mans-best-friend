@@ -1,4 +1,4 @@
-import { Alert, Container } from "@mui/material";
+import { Container } from "@mui/material";
 import DogFilterComponent from "./DogFilterComponent";
 import DogTableResult from "./DogTableResult";
 import { useState } from "react";
@@ -11,11 +11,7 @@ function SearchPage() {
 
       {apiResultObject.resultIds ? (
         <DogTableResult apiResultObject={apiResultObject} />
-      ) : (
-        <Alert severity="info" variant="filled">
-          Click Search Button To Show Data{" "}
-        </Alert>
-      )}
+      ) : null}
     </Container>
   );
 }

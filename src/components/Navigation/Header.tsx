@@ -5,12 +5,12 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import dog from "../../assets/manbestfriend.jpg";
 import { Hidden } from "@mui/material";
-import LogoutIcon from "@mui/icons-material/Logout";
 import authService from "../../services/AuthService";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export default function Header() {
   const navigate = useNavigate();
+  let { pathname } = useLocation();
 
   const signOutUser = () => {
     authService
@@ -28,7 +28,6 @@ export default function Header() {
       <AppBar
         position="static"
         color="transparent"
-        style={{ border: "2px groove orange" }}
         sx={{
           justifyContent: "space-around",
           padding: "0.4em",
@@ -56,22 +55,12 @@ export default function Header() {
           >
             Man's Best Friend
           </Typography>
-          <Hidden mdUp>
-            <Button size="small" color="inherit">
-              <Typography color={"orange"}>Logout</Typography>
-            </Button>
-          </Hidden>
 
-          <Hidden mdDown>
-            <Button
-              endIcon={<LogoutIcon color="warning" />}
-              size="small"
-              color="inherit"
-              onClick={signOutUser}
-            >
+          {pathname !== "/" ? (
+            <Button size="small" color="inherit" onClick={signOutUser}>
               <Typography color={"orange"}>Logout</Typography>
             </Button>
-          </Hidden>
+          ) : null}
         </Toolbar>
       </AppBar>
     </Box>
