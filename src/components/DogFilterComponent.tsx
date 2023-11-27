@@ -4,6 +4,8 @@ import { useFormik } from "formik";
 import SelectBreedComponent from "./MultiSelectComponent";
 import { useFetchBreeds } from "./custom-hooks/useFetchBreeds";
 import dogAction from "../Actions/DogAction";
+import * as Yup from "yup";
+import { CustomErrorDiv, ageValidationSchema } from "../common/YupValidation";
 
 interface apiResultObject {
   next: string;
@@ -26,7 +28,7 @@ function DogFilterComponent({ setApiResultObject }: DogFilterComponentProps) {
       ageMin: "",
       ageMax: "",
     },
-
+    validationSchema: Yup.object(ageValidationSchema),
     onSubmit: (values, { resetForm }) => {
       console.log(values);
       dogAction
@@ -69,11 +71,15 @@ function DogFilterComponent({ setApiResultObject }: DogFilterComponentProps) {
               name="ageMin"
               label="Min-Age"
               id="ageMin"
+              type="number"
               autoComplete="ageMin"
               value={formik.values.ageMin}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
             />
+            {formik.errors.ageMin ? (
+              <CustomErrorDiv>{formik.errors.ageMin}</CustomErrorDiv>
+            ) : null}
           </Grid>
           <Grid item xs={12} md={6}>
             <TextField
@@ -82,11 +88,15 @@ function DogFilterComponent({ setApiResultObject }: DogFilterComponentProps) {
               name="ageMax"
               label="Max-Age"
               id="ageMax"
+              type="number"
               autoComplete="ageMax"
               value={formik.values.ageMax}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
             />
+            {formik.errors.ageMax ? (
+              <CustomErrorDiv>{formik.errors.ageMax}</CustomErrorDiv>
+            ) : null}
           </Grid>
           <Grid item xs={12} md={6}>
             <SelectBreedComponent
