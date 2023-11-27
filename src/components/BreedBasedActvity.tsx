@@ -22,8 +22,6 @@ export default function BreedBasedActivity({
   aiGeneratedActivities,
   dogName,
 }) {
-  // console.log(aiGeneratedActivities);
-
   const isObjectEmpty = (obj: {}) => Object.keys(obj).length === 0;
 
   return (
@@ -37,10 +35,8 @@ export default function BreedBasedActivity({
         maxWidth={"md"}
         fullWidth={true}
       >
-        <DialogTitle>
-          Breed-Based Activity Recommendations for {dogName}
-        </DialogTitle>
-        <DialogContent sx={{ backgroundColor: "#F5F5DC" }}>
+        <DialogTitle>Activities For {dogName}</DialogTitle>
+        <DialogContent>
           {isObjectEmpty(aiGeneratedActivities) ? (
             <p>No activities available.</p>
           ) : (
