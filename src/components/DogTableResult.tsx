@@ -1,12 +1,6 @@
-import React, {
-  useContext,
-  useEffect,
-  useState,
-  Dispatch,
-  SetStateAction,
-} from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { alpha } from "@mui/material/styles";
-import { Alert, Box, Button } from "@mui/material";
+import { Alert, Avatar, Box, Button } from "@mui/material";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -19,15 +13,11 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import Checkbox from "@mui/material/Checkbox";
-import IconButton from "@mui/material/IconButton";
-import Tooltip from "@mui/material/Tooltip";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import FilterListIcon from "@mui/icons-material/FilterList";
 import { visuallyHidden } from "@mui/utils";
 import { useNavigate } from "react-router-dom";
 import { DogContext } from "../context/DogContext";
 import DogAction from "../Actions/DogAction";
-import useFetchDogsData from "./custom-hooks/useFetchDogsData";
 
 interface Dog {
   id: string;
@@ -99,13 +89,13 @@ const headCells: readonly HeadCell[] = [
     id: "name",
     numeric: true,
     disablePadding: false,
-    label: "Dog Name",
+    label: "Name",
   },
   {
-    id: "img",
+    id: "breed",
     numeric: true,
-    disablePadding: false,
-    label: "Picture",
+    disablePadding: true,
+    label: "Breed",
   },
   {
     id: "age",
@@ -120,10 +110,10 @@ const headCells: readonly HeadCell[] = [
     label: "Zip_Code",
   },
   {
-    id: "breed",
+    id: "favorite",
     numeric: true,
     disablePadding: false,
-    label: "Breed",
+    label: "Favorite",
   },
 ];
 
@@ -149,9 +139,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   return (
     <TableHead>
       <TableRow>
-        <TableCell align="right" padding="checkbox">
-          Favorites
-        </TableCell>
+        <TableCell align="center"> Image</TableCell>
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
@@ -192,7 +180,7 @@ interface EnhancedTableToolbarProps {
 
 function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   const { numSelected } = props;
-  const navigate = useNavigate();
+
   return (
     <Toolbar
       sx={{
@@ -207,7 +195,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
         }),
       }}
     >
-      {numSelected > 0 ? (
+      {numSelected > 0 && (
         <Typography
           sx={{ flex: "1 1 100%" }}
           color="inherit"
@@ -216,26 +204,6 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
         >
           {numSelected} Favorite
         </Typography>
-      ) : (
-        <Typography
-          sx={{ flex: "1 1 100%" }}
-          variant="h6"
-          id="tableTitle"
-          component="div"
-        >
-          Dogs
-        </Typography>
-      )}
-      {numSelected > 0 ? (
-        // <Tooltip title="favs">
-        <Button onClick={() => navigate("/favoritedogs")}>Match</Button>
-      ) : (
-        // </Tooltip>
-        <Tooltip title="Filter list">
-          <IconButton>
-            <FilterListIcon />
-          </IconButton>
-        </Tooltip>
       )}
     </Toolbar>
   );
@@ -256,25 +224,53 @@ export default function DogTableResult({
   const [error, setError] = useState(null);
   const [tablesData, setTablesData] = useState<Dog[]>([]);
   const [tablePaginationCount, setTablePaginationCount] = useState<number>(0);
+  const [initialRender, setInitialRender] = useState<boolean>(true);
 
   /**useContext hooks */
-  const { setFavoriteDogsId } = useContext(DogContext);
+  const { setFavoriteDogsId, setAiGeneratedActivities, setMatchDogData } =
+    useContext(DogContext);
 
   /**router dom hooks */
   const navigate = useNavigate();
-
-  /**custom hooks */
-  const [dogsData] = useFetchDogsData(
-    apiResultObject.resultIds ? apiResultObject.resultIds : []
-  );
-
+  // console.log(tablesData);
   useEffect(() => {
-    setNextUrl(apiResultObject.next);
-    setTablesData(dogsData);
-    setTablePaginationCount(apiResultObject.total);
-  }, [apiResultObject, dogsData]);
+    const fetchDogData = async () => {
+      console.log("intial render is being called" + initialRender);
+      if (initialRender) {
+        try {
+          const allDogsResponse = await DogAction.fetchAllDogs();
+          // console.log(allDogsResponse);
+          setTablePaginationCount(allDogsResponse.total);
+          setNextUrl(allDogsResponse.next);
+
+          const dogDetailsResponse = await DogAction.fetchDogs(
+            allDogsResponse.resultIds
+          );
+          setTablesData(dogDetailsResponse);
+          // console.log(dogDetailsResponse);
+        } catch (error) {
+          console.error("Error fetching dog data:", error);
+        }
+      }
+      // debugger;
+      if (apiResultObject.resultIds.length > 0) {
+        setPage(0);
+        const dogDetailsResponse = await DogAction.fetchDogs(
+          apiResultObject.resultIds
+        );
+        console.log("is called");
+
+        setTablesData(dogDetailsResponse);
+        setTablePaginationCount(apiResultObject.total);
+        setNextUrl(apiResultObject.next);
+      }
+    };
+
+    fetchDogData();
+  }, [apiResultObject]);
 
   const fetchNextData = async (url: string) => {
+    console.log("loading next data");
     try {
       setIsLoading(true);
       const nextPageResponse = await DogAction.fetchNextPageData(url);
@@ -334,6 +330,7 @@ export default function DogTableResult({
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
+    setInitialRender(false);
 
     if (newPage > page && nextUrl) {
       fetchNextData(nextUrl);
@@ -362,91 +359,100 @@ export default function DogTableResult({
 
   const matchMyFavDogs = () => {
     setFavoriteDogsId(selected);
+    setMatchDogData([]);
+    setAiGeneratedActivities({});
     navigate("/favoritedogs");
   };
 
   return (
-    <Box sx={{ width: "100%", mt: 4 }}>
-      <Paper sx={{ width: "100%", mb: 2 }}>
-        <EnhancedTableToolbar numSelected={selected.length} />
-        <TableContainer>
-          <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle">
-            <EnhancedTableHead
-              numSelected={selected.length}
-              order={order}
-              orderBy={orderBy}
-              onSelectAllClick={handleSelectAllClick}
-              onRequestSort={handleRequestSort}
-              rowCount={tablesData.length}
-            />
-            <TableBody>
-              {visibleRows.map((dog, index) => {
-                const isItemSelected = isSelected(dog.id);
-                const labelId = `enhanced-table-checkbox-${index}`;
+    <>
+      <Box sx={{ width: "100%", mt: 4 }}>
+        <Paper sx={{ width: "100%", mb: 2 }}>
+          <EnhancedTableToolbar numSelected={selected.length} />
+          <TableContainer>
+            <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle">
+              <EnhancedTableHead
+                numSelected={selected.length}
+                order={order}
+                orderBy={orderBy}
+                onSelectAllClick={handleSelectAllClick}
+                onRequestSort={handleRequestSort}
+                rowCount={tablesData.length}
+              />
+              <TableBody>
+                {visibleRows.map((dog, index) => {
+                  const isItemSelected = isSelected(dog.id);
+                  const labelId = `enhanced-table-checkbox-${index}`;
 
-                return (
-                  <TableRow
-                    hover
-                    onClick={(event) => handleClick(event, dog.id)}
-                    role="checkbox"
-                    aria-checked={isItemSelected}
-                    tabIndex={-1}
-                    key={dog.id}
-                    selected={isItemSelected}
-                    sx={{ cursor: "pointer" }}
-                  >
-                    <TableCell>
-                      <Checkbox
-                        color="success"
-                        checked={isItemSelected}
-                        inputProps={{
-                          "aria-labelledby": labelId,
-                        }}
-                        icon={<FavoriteBorderIcon />}
-                      />
-                    </TableCell>
-                    <TableCell align="right">{dog.name}</TableCell>
-                    <TableCell align="right">
-                      <Box
-                        component="img"
+                  return (
+                    <TableRow
+                      hover
+                      onClick={(event) => handleClick(event, dog.id)}
+                      role="checkbox"
+                      aria-checked={isItemSelected}
+                      tabIndex={-1}
+                      key={dog.id}
+                      selected={isItemSelected}
+                      sx={{ cursor: "pointer" }}
+                    >
+                      <TableCell
                         sx={{
-                          maxHeight: { xs: 50, md: 100 },
-                          maxWidth: { xs: 50, md: 100 },
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
                         }}
-                        alt="Man's best friend"
-                        src={String(dog.img)}
-                      />
-                    </TableCell>
+                      >
+                        <Avatar
+                          alt="Man's best friend"
+                          src={String(dog.img)}
+                          sx={{
+                            height: { xs: 80, md: 120 },
+                            width: { xs: 80, md: 120 },
+                          }}
+                        />
+                      </TableCell>
+                      <TableCell align="right">{dog.name}</TableCell>
+                      <TableCell align="right">{dog.breed}</TableCell>
 
-                    <TableCell align="right">{dog.age}</TableCell>
-                    <TableCell align="right">{dog.zip_code}</TableCell>
-                    <TableCell align="right">{dog.breed}</TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={[20]}
-          component="div"
-          count={tablePaginationCount}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
+                      <TableCell align="right">{dog.age}</TableCell>
+                      <TableCell align="right">{dog.zip_code}</TableCell>
+                      <TableCell align="right">
+                        <Checkbox
+                          color="success"
+                          checked={isItemSelected}
+                          inputProps={{
+                            "aria-labelledby": labelId,
+                          }}
+                          icon={<FavoriteBorderIcon />}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <TablePagination
+            rowsPerPageOptions={[20]}
+            component="div"
+            count={tablePaginationCount}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
 
-        {isLoading && <Alert severity="info">Loading Next Data</Alert>}
-        {error && <Alert severity="info">Error Loading Next Data</Alert>}
-      </Paper>
-      <Button
-        variant="contained"
-        disabled={selected ? false : true}
-        onClick={() => matchMyFavDogs()}
-      >
-        Match My Fav Dogs
-      </Button>
-    </Box>
+          {isLoading && <Alert severity="info">Loading Next Data</Alert>}
+          {error && <Alert severity="info">Error Loading Next Data</Alert>}
+        </Paper>
+        <Button
+          variant="contained"
+          disabled={selected ? false : true}
+          onClick={() => matchMyFavDogs()}
+        >
+          Match My Fav Dogs
+        </Button>
+      </Box>
+    </>
   );
 }
