@@ -4,7 +4,7 @@ import DogTableResult from "./DogTableResult";
 import { useState } from "react";
 
 function SearchPage() {
-  const [apiResultObject, setApiResultObject] = useState({});
+  const [apiResultObject, setApiResultObject] = useState<any>({});
 
   return (
     <Container>

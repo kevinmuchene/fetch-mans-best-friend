@@ -6,6 +6,8 @@ import Select from "@mui/material/Select";
 import { Checkbox, ListItemText } from "@mui/material";
 import React, { useContext } from "react";
 import { DogContext } from "../context/DogContext";
+import { FormikErrors } from "formik";
+import { TypeIntialValues } from "../common/Interfaces";
 
 const MenuProps = {
   PaperProps: {
@@ -16,16 +18,28 @@ const MenuProps = {
   },
 };
 
-const MultiSelectComponent = React.memo(function MultiSelectComponent({
-  selectedItems = [],
+interface SelectBreedComponentProps {
+  selectedItems: string[];
+  setSelectedItems: (
+    field: string,
+    value: any
+  ) => Promise<void> | Promise<FormikErrors<TypeIntialValues>>;
+  label: string;
+}
+
+const MultiSelectComponent: React.FC<SelectBreedComponentProps> = ({
+  selectedItems,
   setSelectedItems,
   label,
-}) {
+}) => {
   const { breedData } = useContext(DogContext);
 
-  const handleChange = React.useCallback((event) => {
-    setSelectedItems("breeds", event.target.value);
-  }, []);
+  const handleChange = React.useCallback(
+    (event: { target: { value: any } }) => {
+      setSelectedItems("breeds", event.target.value);
+    },
+    []
+  );
 
   console.log("Multi-select component");
 
@@ -51,6 +65,6 @@ const MultiSelectComponent = React.memo(function MultiSelectComponent({
       </Select>
     </FormControl>
   );
-});
+};
 
 export default MultiSelectComponent;

@@ -13,7 +13,7 @@ export default class DogService {
     return defaultRestApi.get(APIs.searchDogs(url));
   };
 
-  static fetchDogs = (data: []) => {
+  static fetchDogs = (data: string[]) => {
     return defaultRestApi.post(APIs.fetchDogs(), data);
   };
 
@@ -21,7 +21,7 @@ export default class DogService {
     return defaultRestApi.get(APIs.fetchNextPageData(nextAPI));
   };
 
-  static fetchFavoriteMatch = (data: []) => {
+  static fetchFavoriteMatch = (data: string[]) => {
     return defaultRestApi.post(APIs.matchFavoriteDog(), data);
   };
 }

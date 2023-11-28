@@ -3,7 +3,6 @@ import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
-import dog from "../../assets/manbestfriend.jpg";
 import { Hidden } from "@mui/material";
 import authService from "../../services/AuthService";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -43,7 +42,9 @@ export default function Header() {
                 maxWidth: { xs: 50, md: 100 },
               }}
               alt="Man's best friend"
-              src={dog}
+              src={
+                "https://www.google.com/imgres?imgurl=https%3A%2F%2Fmedia-cldnry.s-nbcnews.com%2Fimage%2Fupload%2Ft_nbcnews-fp-1200-630%2Cf_auto%2Cq_auto%3Abest%2Frockcms%2F2022-08%2F220805-border-collie-play-mn-1100-82d2f1.jpg&tbnid=ODrWiJnFJcNTtM&vet=12ahUKEwj2nMiPwOeCAxUKKdAFHY3CAEIQMygOegUIARCBAg..i&imgrefurl=https%3A%2F%2Fwww.nbcnews.com%2Fhealth%2Fhealth-news%2Fsigns-dog-intelligence-gifted-dogs-play-study-finds-rcna41534&docid=k7BBLaWotRbDIM&w=1200&h=630&q=image%20dog&ved=2ahUKEwj2nMiPwOeCAxUKKdAFHY3CAEIQMygOegUIARCBAg"
+              }
             />
           </Hidden>
 

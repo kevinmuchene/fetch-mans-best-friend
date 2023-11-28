@@ -3,13 +3,12 @@ import DogCard from "./DogCard";
 import { useContext, useEffect, useState } from "react";
 import { DogContext } from "../context/DogContext";
 import DogAction from "../Actions/DogAction";
-import { DogZipCode } from "../common/Interfaces";
 
 function FavDogsComponent() {
   const { favoriteDogsId, setMatchDogData, matchDogData } =
     useContext(DogContext);
 
-  const [zipcode, setZipcode] = useState<DogZipCode[]>([]);
+  const [zipcode, setZipcode] = useState<string[]>([]);
 
   useEffect(() => {
     if (favoriteDogsId.length > 0) {

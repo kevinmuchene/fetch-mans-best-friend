@@ -1,7 +1,7 @@
 import authService from "../services/AuthService";
 
 export default class AuthActions {
-  static async signin(data) {
+  static async signin(data: {}) {
     return authService.signin(data).then((res) => {
       return res.data || {};
     });

@@ -7,7 +7,7 @@ export default class DogAction {
     });
   }
 
-  static async fetchAllDogs(sort) {
+  static async fetchAllDogs(sort: string) {
     return dogService.fetchAllDogs(sort).then((res) => {
       return res.data || {};
     });

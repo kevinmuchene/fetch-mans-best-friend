@@ -8,7 +8,13 @@ export function processZipCodes(input: string) {
   return validZipCodes;
 }
 
-export function createUrl(dogBreeds, ageMin, ageMax, validZipCodes, sort) {
+export function createUrl(
+  dogBreeds: string[],
+  ageMin: string,
+  ageMax: string,
+  validZipCodes: string[],
+  sort: string
+) {
   let dogBreedsString = "";
 
   if (dogBreeds.length > 0) {

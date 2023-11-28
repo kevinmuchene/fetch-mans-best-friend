@@ -19,7 +19,8 @@ const useGenerateActivities = () => {
     const url = "https://api.openai.com/v1/chat/completions";
     const params = {
       headers: {
-        Authorization: `Bearer ${import.meta.env.VITE_OPENAI}`,
+        // Authorization: `Bearer ${import.meta.env.VITE_OPENAI}`,
+        Authorization: `Bearer 34-df-45-23r`,
 
         "Content-Type": "application/json",
       },

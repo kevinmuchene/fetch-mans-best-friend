@@ -16,3 +16,17 @@ export interface Location {
   longitude: string;
   state: string;
 }
+
+export type FilterValues = {
+  breeds: string[];
+  ageMin: string;
+  ageMax: string;
+  validZipCodes: string[];
+};
+
+export type TypeIntialValues = {
+  breeds: string[];
+  zipCodes: string;
+  ageMin: string;
+  ageMax: string;
+};
