@@ -10,7 +10,6 @@ import useGenerateActivities from "../common/openAI/TransformAIResponseObject";
 import { DogContext } from "../context/DogContext";
 import { useNavigate } from "react-router-dom";
 import { useFetchLocationByZip } from "./custom-hooks/useFetchLocationByZip";
-import { DogZipCode } from "../common/Interfaces";
 
 const StyledTypography = styled(Typography)(() => ({
   fontWeight: "bold",
@@ -21,7 +20,7 @@ const StyledTypography = styled(Typography)(() => ({
   display: "inline-block",
 }));
 
-export default function DogCard({ zipcode }: { zipcode: DogZipCode[] }) {
+export default function DogCard({ zipcode }: { zipcode: string[] }) {
   const [open, setOpen] = useState<boolean>(false);
 
   const { aiGeneratedActivities, matchDogData, matchLocation } =

@@ -7,6 +7,7 @@ import * as Yup from "yup";
 import { CustomErrorDiv, ageValidationSchema } from "../common/YupValidation";
 import { createUrl, processZipCodes } from "../common/HelperFunctions";
 import { DogContext } from "../context/DogContext";
+import { TypeIntialValues } from "../common/Interfaces";
 
 interface apiResultObject {
   next: string;
@@ -22,22 +23,25 @@ const isObjectEmpty = (obj: {}) =>
   Object.values(obj).every(
     (value) => (Array.isArray(value) && value.length === 0) || value === ""
   );
+
+let initialValues: TypeIntialValues = {
+  breeds: [],
+  zipCodes: "",
+  ageMin: "",
+  ageMax: "",
+};
+
 function DogFilterComponent({ setApiResultObject }: DogFilterComponentProps) {
   const { sortingStrategy, filterValues, setFilterValues } =
     useContext(DogContext);
 
   const formik = useFormik({
-    initialValues: {
-      breeds: [],
-      zipCodes: "",
-      ageMin: "",
-      ageMax: "",
-    },
+    initialValues: initialValues,
     validationSchema: Yup.object(ageValidationSchema),
     onSubmit: (values, { resetForm }) => {
       console.log(values);
       const validZipCodes = processZipCodes(values.zipCodes);
-      debugger;
+
       let filterValues = {
         breeds: values.breeds,
         ageMin: values.ageMin,
@@ -59,7 +63,7 @@ function DogFilterComponent({ setApiResultObject }: DogFilterComponentProps) {
     },
   });
 
-  const handleSubmit = (url) => {
+  const handleSubmit = (url: string) => {
     console.log(url);
 
     dogAction

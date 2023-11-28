@@ -14,7 +14,6 @@ import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import Checkbox from "@mui/material/Checkbox";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import { visuallyHidden } from "@mui/utils";
 import { useNavigate } from "react-router-dom";
 import { DogContext } from "../context/DogContext";
 import DogAction from "../Actions/DogAction";
@@ -26,6 +25,7 @@ interface Dog {
   age: number;
   zip_code: string;
   breed: string;
+  favorite: string;
 }
 interface apiResultObject {
   next: string;
@@ -38,45 +38,6 @@ interface ResultObjectComponentProps {
   apiResultObject: apiResultObject;
 }
 const isObjectEmpty = (obj: {}) => Object.keys(obj).length === 0;
-
-function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-  return 0;
-}
-
-type Order = "asc" | "desc";
-
-function getComparator<Key extends keyof any>(
-  order: Order,
-  orderBy: Key
-): (
-  a: { [key in Key]: number | string },
-  b: { [key in Key]: number | string }
-) => number {
-  return order === "desc"
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-function stableSort<T>(
-  array: readonly T[],
-  comparator: (a: T, b: T) => number
-) {
-  const stabilizedThis = array.map((el, index) => [el, index] as [T, number]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) {
-      return order;
-    }
-    return a[1] - b[1];
-  });
-  return stabilizedThis.map((el) => el[0]);
-}
 
 interface HeadCell {
   disablePadding: boolean;
@@ -124,14 +85,12 @@ interface EnhancedTableProps {
     event: React.MouseEvent<unknown>,
     property: keyof Dog
   ) => void;
-  onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  order: Order;
-  orderBy: string;
+
   rowCount: number;
 }
 
 function EnhancedTableHead(props: EnhancedTableProps) {
-  const { order, orderBy, onRequestSort } = props;
+  const { onRequestSort } = props;
   const createSortHandler =
     (property: keyof Dog) => (event: React.MouseEvent<unknown>) => {
       onRequestSort(event, property);
@@ -147,24 +106,10 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             key={headCell.id}
             align={headCell.numeric ? "right" : "left"}
             padding={headCell.disablePadding ? "none" : "normal"}
-            sortDirection={
-              headCell.id === "breed" && orderBy === headCell.id ? order : false
-            }
           >
             {headCell.id === "breed" ? (
-              <TableSortLabel
-                active={orderBy === headCell.id}
-                direction={orderBy === headCell.id ? order : "asc"}
-                onClick={createSortHandler(headCell.id)}
-              >
+              <TableSortLabel onClick={createSortHandler(headCell.id)}>
                 {headCell.label}
-                {/* {orderBy === headCell.id ? (
-                  <Box component="span" sx={visuallyHidden}>
-                    {order === "desc"
-                      ? "sorted descending"
-                      : "sorted ascending"}
-                  </Box>
-                ) : null} */}
               </TableSortLabel>
             ) : (
               headCell.label
@@ -215,9 +160,8 @@ export default function DogTableResult({
   apiResultObject,
 }: ResultObjectComponentProps) {
   /**useState hooks */
-  const [order, setOrder] = useState<Order>("asc");
-  const [orderBy, setOrderBy] = useState<keyof Dog>("breed");
-  const [selected, setSelected] = useState<readonly number[]>([]);
+
+  const [selected, setSelected] = useState<string[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(20);
   const [nextUrl, setNextUrl] = useState<string | null>("");
@@ -306,7 +250,7 @@ export default function DogTableResult({
     property: keyof Dog
   ) => {
     if (property !== "breed") return;
-
+    console.log(event);
     if (initialRender) {
       initialPageLoadSort === "asc"
         ? setInitialPageLoadSort("desc")
@@ -323,19 +267,10 @@ export default function DogTableResult({
     console.log("sort breeds on handle request");
   };
 
-  const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.checked) {
-      const newSelected = tablesData.map((n) => n.id);
-      setSelected(newSelected);
-      return;
-    }
-    setSelected([]);
-  };
-
-  const handleClick = (event: React.MouseEvent<unknown>, id: number) => {
+  const handleClick = (event: React.MouseEvent<unknown>, id: string) => {
     const selectedIndex = selected.indexOf(id);
-    let newSelected: readonly number[] = [];
-
+    let newSelected: string[] = [];
+    console.log(event);
     if (selectedIndex === -1) {
       newSelected = newSelected.concat(selected, id);
     } else if (selectedIndex === 0) {
@@ -353,6 +288,7 @@ export default function DogTableResult({
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
+    console.log(event);
     setInitialRender(false);
 
     if (newPage > page && nextUrl) {
@@ -373,11 +309,6 @@ export default function DogTableResult({
 
   const isSelected = (id: string) => selected.indexOf(id) !== -1;
 
-  const visibleRows = React.useMemo(
-    () => stableSort(tablesData, getComparator(order, orderBy)),
-    [order, orderBy, page, rowsPerPage, tablesData]
-  );
-
   // console.log(selected);
 
   const matchMyFavDogs = () => {
@@ -396,14 +327,11 @@ export default function DogTableResult({
             <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle">
               <EnhancedTableHead
                 numSelected={selected.length}
-                order={order}
-                orderBy={orderBy}
-                onSelectAllClick={handleSelectAllClick}
                 onRequestSort={handleRequestSort}
                 rowCount={tablesData.length}
               />
               <TableBody>
-                {visibleRows.map((dog, index) => {
+                {tablesData.map((dog, index) => {
                   const isItemSelected = isSelected(dog.id);
                   const labelId = `enhanced-table-checkbox-${index}`;
 

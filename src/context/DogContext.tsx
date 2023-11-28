@@ -1,5 +1,5 @@
 import { createContext, useState } from "react";
-import { Dog, Location } from "../common/Interfaces";
+import { Dog, FilterValues, Location } from "../common/Interfaces";
 
 interface DogContextType {
   breedData: string[];
@@ -14,7 +14,7 @@ interface DogContextType {
   setMatchLocation: (locationData: any) => void;
   sortingStrategy: string;
   setSortingStrategy: (strategy: string) => void;
-  filterValues: {};
+  filterValues: FilterValues;
   setFilterValues: (values: any) => void;
   initialPageLoadSort: string;
   setInitialPageLoadSort: (strategy: string) => void;
@@ -30,7 +30,12 @@ const defaultContextValue: DogContextType = {
   setMatchDogData: () => {},
   matchLocation: [],
   setMatchLocation: () => {},
-  filterValues: {},
+  filterValues: {
+    breeds: [],
+    ageMin: "",
+    ageMax: "",
+    validZipCodes: [],
+  },
   setFilterValues: () => {},
   sortingStrategy: "",
   setSortingStrategy: () => {},
@@ -51,7 +56,12 @@ export const DogProvider: React.FC<DogProviderProps> = ({ children }) => {
   const [matchLocation, setMatchLocation] = useState<any>([]);
   const [breedData, setBreedData] = useState<string[]>([]);
   const [sortingStrategy, setSortingStrategy] = useState<string>("asc");
-  const [filterValues, setFilterValues] = useState<{}>({});
+  const [filterValues, setFilterValues] = useState<FilterValues>({
+    breeds: [],
+    ageMin: "",
+    ageMax: "",
+    validZipCodes: [],
+  });
   const [initialPageLoadSort, setInitialPageLoadSort] = useState<string>("asc");
 
   return (

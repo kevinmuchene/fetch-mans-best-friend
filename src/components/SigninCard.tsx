@@ -17,10 +17,10 @@ const SignIn = function SiginCard() {
 
   const formik = useFormik({
     initialValues: {
-      name: "kevin",
-      email: "kevin@gmail.com",
+      name: "",
+      email: "",
     },
-    // validationSchema: Yup.object(signInValidationSchema),
+    validationSchema: Yup.object(signInValidationSchema),
     onSubmit: (values, { resetForm }) => {
       console.log(values);
       authAction
