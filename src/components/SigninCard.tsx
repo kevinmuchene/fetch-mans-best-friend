@@ -22,7 +22,6 @@ const SignIn = function SiginCard() {
     },
     validationSchema: Yup.object(signInValidationSchema),
     onSubmit: (values, { resetForm }) => {
-      console.log(values);
       authAction
         .signin(values)
         .then((res) => {
