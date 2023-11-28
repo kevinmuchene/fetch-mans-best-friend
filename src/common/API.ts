@@ -18,27 +18,13 @@ const APIs = {
     return `${apiMainURL}${fetchBreeds}`;
   },
 
-  searchDogs: function (
-    dogBreeds: string[],
-    minAge: string,
-    maxAge: string,
-    zip_code: string[]
-  ) {
-    const dogBreedsString = dogBreeds
-      .map((breed) => `breeds=${encodeURIComponent(breed)}`)
-      .join("&");
-    const url = `${apiMainURL}${searchAPI}?ageMin=${minAge}&ageMax=${maxAge}${
-      zip_code.length ? `&zipCodes=${zip_code}` : ""
-    }${dogBreedsString ? `&${dogBreedsString}` : ""}&size=20`;
-
-    console.log(url);
-
-    return url;
+  searchDogs: function (url: string) {
+    return `${apiMainURL}${searchAPI}${url}`;
   },
 
-  fetchAllDogs: function () {
-    // return `${apiMainURL}${searchAPI}&size=20`;
-    return `${apiMainURL}${searchAPI}?&size=20`;
+  fetchAllDogs: function (sort = "asc") {
+    console.log(`${apiMainURL}${searchAPI}?&size=20&sort=breed:${sort}`);
+    return `${apiMainURL}${searchAPI}?&size=20&sort=breed:${sort}`;
   },
   fetchDogs: function () {
     return `${apiMainURL}${fetchDogs}`;

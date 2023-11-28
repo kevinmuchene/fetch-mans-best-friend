@@ -7,23 +7,16 @@ export default class DogAction {
     });
   }
 
-  static async fetchAllDogs() {
-    return dogService.fetchAllDogs().then((res) => {
+  static async fetchAllDogs(sort) {
+    return dogService.fetchAllDogs(sort).then((res) => {
       return res.data || {};
     });
   }
 
-  static async searchDogs(
-    dogBreedsString: [],
-    minAge: number,
-    maxAge: number,
-    zip_code: string[]
-  ) {
-    return dogService
-      .searchDogs(dogBreedsString, minAge, maxAge, zip_code)
-      .then((res) => {
-        return res.data || {};
-      });
+  static async searchDogs(url: string) {
+    return dogService.searchDogs(url).then((res) => {
+      return res.data || {};
+    });
   }
 
   static async fetchDogs(data: string[]) {

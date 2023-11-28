@@ -1,10 +1,12 @@
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useContext, useEffect } from "react";
 import { TextField, Button, Box, Grid, Typography, Paper } from "@mui/material";
 import { useFormik } from "formik";
 import SelectBreedComponent from "./MultiSelectComponent";
 import dogAction from "../Actions/DogAction";
 import * as Yup from "yup";
 import { CustomErrorDiv, ageValidationSchema } from "../common/YupValidation";
+import { createUrl, processZipCodes } from "../common/HelperFunctions";
+import { DogContext } from "../context/DogContext";
 
 interface apiResultObject {
   next: string;
@@ -16,18 +18,14 @@ interface apiResultObject {
 interface DogFilterComponentProps {
   setApiResultObject: Dispatch<SetStateAction<apiResultObject>>;
 }
-
-function processZipCodes(input: string) {
-  const zipCodes = input.split(" ");
-
-  const validZipCodes = zipCodes.filter(
-    (zipCode) => zipCode.length === 5 && /^\d+$/.test(zipCode)
+const isObjectEmpty = (obj: {}) =>
+  Object.values(obj).every(
+    (value) => (Array.isArray(value) && value.length === 0) || value === ""
   );
-
-  return validZipCodes;
-}
-
 function DogFilterComponent({ setApiResultObject }: DogFilterComponentProps) {
+  const { sortingStrategy, filterValues, setFilterValues } =
+    useContext(DogContext);
+
   const formik = useFormik({
     initialValues: {
       breeds: [],
@@ -38,23 +36,58 @@ function DogFilterComponent({ setApiResultObject }: DogFilterComponentProps) {
     validationSchema: Yup.object(ageValidationSchema),
     onSubmit: (values, { resetForm }) => {
       console.log(values);
-
       const validZipCodes = processZipCodes(values.zipCodes);
-      dogAction
-        .searchDogs(values.breeds, values.ageMin, values.ageMax, validZipCodes)
-        .then((res) => {
-          // debugger;
-          console.log(res);
-          setApiResultObject(res);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      debugger;
+      let filterValues = {
+        breeds: values.breeds,
+        ageMin: values.ageMin,
+        ageMax: values.ageMax,
+        validZipCodes,
+      };
+
+      let url = createUrl(
+        values.breeds,
+        values.ageMin,
+        values.ageMax,
+        validZipCodes,
+        sortingStrategy
+      );
+      setFilterValues(filterValues);
+      handleSubmit(url);
 
       resetForm();
     },
   });
-  console.log("Dog filter component");
+
+  const handleSubmit = (url) => {
+    console.log(url);
+
+    dogAction
+      .searchDogs(url)
+      .then((res) => {
+        // debugger;
+        console.log(res);
+        setApiResultObject(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  useEffect(() => {
+    if (!isObjectEmpty(filterValues)) {
+      let url = createUrl(
+        filterValues.breeds,
+        filterValues.ageMin,
+        filterValues.ageMax,
+        filterValues.validZipCodes,
+        sortingStrategy
+      );
+
+      handleSubmit(url);
+    }
+  }, [sortingStrategy]);
+
   return (
     <Paper sx={{ width: "100%", mb: 2 }}>
       <Box sx={{ mt: 1 }}>

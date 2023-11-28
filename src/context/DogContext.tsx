@@ -1,12 +1,6 @@
 import { createContext, useState } from "react";
+import { Dog, Location } from "../common/Interfaces";
 
-interface Dog {
-  img: string;
-  name: string;
-  age: number;
-  zip_code: string;
-  breed: string;
-}
 interface DogContextType {
   breedData: string[];
   setBreedData: (breedData: string[]) => void;
@@ -16,8 +10,14 @@ interface DogContextType {
   setAiGeneratedActivities: (activities: any) => void;
   matchDogData: Dog[];
   setMatchDogData: (dogData: Dog[]) => void;
-  matchLocation: string[];
+  matchLocation: Location[];
   setMatchLocation: (locationData: any) => void;
+  sortingStrategy: string;
+  setSortingStrategy: (strategy: string) => void;
+  filterValues: {};
+  setFilterValues: (values: any) => void;
+  initialPageLoadSort: string;
+  setInitialPageLoadSort: (strategy: string) => void;
 }
 const defaultContextValue: DogContextType = {
   breedData: [],
@@ -30,6 +30,12 @@ const defaultContextValue: DogContextType = {
   setMatchDogData: () => {},
   matchLocation: [],
   setMatchLocation: () => {},
+  filterValues: {},
+  setFilterValues: () => {},
+  sortingStrategy: "",
+  setSortingStrategy: () => {},
+  initialPageLoadSort: "",
+  setInitialPageLoadSort: () => {},
 };
 
 interface DogProviderProps {
@@ -44,6 +50,9 @@ export const DogProvider: React.FC<DogProviderProps> = ({ children }) => {
   const [matchDogData, setMatchDogData] = useState<Dog[]>([]);
   const [matchLocation, setMatchLocation] = useState<any>([]);
   const [breedData, setBreedData] = useState<string[]>([]);
+  const [sortingStrategy, setSortingStrategy] = useState<string>("asc");
+  const [filterValues, setFilterValues] = useState<{}>({});
+  const [initialPageLoadSort, setInitialPageLoadSort] = useState<string>("asc");
 
   return (
     <DogContext.Provider
@@ -58,6 +67,12 @@ export const DogProvider: React.FC<DogProviderProps> = ({ children }) => {
         setMatchDogData,
         matchLocation,
         setMatchLocation,
+        sortingStrategy,
+        setSortingStrategy,
+        filterValues,
+        setFilterValues,
+        initialPageLoadSort,
+        setInitialPageLoadSort,
       }}
     >
       {children}

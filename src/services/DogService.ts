@@ -5,19 +5,12 @@ export default class DogService {
   static fetchBreed = () => {
     return defaultRestApi.get(APIs.fetchBreeds());
   };
-  static fetchAllDogs = () => {
-    return defaultRestApi.get(APIs.fetchAllDogs());
+  static fetchAllDogs = (sort: string) => {
+    return defaultRestApi.get(APIs.fetchAllDogs(sort));
   };
 
-  static searchDogs = (
-    dogBreedsString: string[],
-    minAge: string,
-    maxAge: string,
-    zip_code: string[]
-  ) => {
-    return defaultRestApi.get(
-      APIs.searchDogs(dogBreedsString, minAge, maxAge, zip_code)
-    );
+  static searchDogs = (url: string) => {
+    return defaultRestApi.get(APIs.searchDogs(url));
   };
 
   static fetchDogs = (data: []) => {

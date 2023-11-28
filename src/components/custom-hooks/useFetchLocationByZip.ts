@@ -1,8 +1,9 @@
 import { useEffect, useContext } from "react";
 import locationAction from "../../Actions/LocationAction";
 import { DogContext } from "../../context/DogContext";
+import { DogZipCode } from "../../common/Interfaces";
 
-export const useFetchLocationByZip = (zipsCode: []) => {
+export const useFetchLocationByZip = (zipsCode: DogZipCode[]) => {
   const { setMatchLocation } = useContext(DogContext);
 
   useEffect(() => {

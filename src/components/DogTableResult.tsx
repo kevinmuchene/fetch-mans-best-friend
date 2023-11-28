@@ -37,6 +37,7 @@ interface apiResultObject {
 interface ResultObjectComponentProps {
   apiResultObject: apiResultObject;
 }
+const isObjectEmpty = (obj: {}) => Object.keys(obj).length === 0;
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -134,6 +135,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   const createSortHandler =
     (property: keyof Dog) => (event: React.MouseEvent<unknown>) => {
       onRequestSort(event, property);
+      // console.log("sorting breeds");
     };
 
   return (
@@ -156,13 +158,13 @@ function EnhancedTableHead(props: EnhancedTableProps) {
                 onClick={createSortHandler(headCell.id)}
               >
                 {headCell.label}
-                {orderBy === headCell.id ? (
+                {/* {orderBy === headCell.id ? (
                   <Box component="span" sx={visuallyHidden}>
                     {order === "desc"
                       ? "sorted descending"
                       : "sorted ascending"}
                   </Box>
-                ) : null}
+                ) : null} */}
               </TableSortLabel>
             ) : (
               headCell.label
@@ -227,8 +229,15 @@ export default function DogTableResult({
   const [initialRender, setInitialRender] = useState<boolean>(true);
 
   /**useContext hooks */
-  const { setFavoriteDogsId, setAiGeneratedActivities, setMatchDogData } =
-    useContext(DogContext);
+  const {
+    setFavoriteDogsId,
+    setAiGeneratedActivities,
+    setMatchDogData,
+    sortingStrategy,
+    setSortingStrategy,
+    initialPageLoadSort,
+    setInitialPageLoadSort,
+  } = useContext(DogContext);
 
   /**router dom hooks */
   const navigate = useNavigate();
@@ -236,9 +245,11 @@ export default function DogTableResult({
   useEffect(() => {
     const fetchDogData = async () => {
       console.log("intial render is being called" + initialRender);
-      if (initialRender) {
+      if (initialRender && isObjectEmpty(apiResultObject)) {
         try {
-          const allDogsResponse = await DogAction.fetchAllDogs();
+          const allDogsResponse = await DogAction.fetchAllDogs(
+            initialPageLoadSort
+          );
           // console.log(allDogsResponse);
           setTablePaginationCount(allDogsResponse.total);
           setNextUrl(allDogsResponse.next);
@@ -255,6 +266,7 @@ export default function DogTableResult({
       // debugger;
       if (apiResultObject.resultIds.length > 0) {
         setPage(0);
+        setInitialRender(false);
         const dogDetailsResponse = await DogAction.fetchDogs(
           apiResultObject.resultIds
         );
@@ -267,7 +279,7 @@ export default function DogTableResult({
     };
 
     fetchDogData();
-  }, [apiResultObject]);
+  }, [apiResultObject, initialPageLoadSort]);
 
   const fetchNextData = async (url: string) => {
     console.log("loading next data");
@@ -295,9 +307,20 @@ export default function DogTableResult({
   ) => {
     if (property !== "breed") return;
 
-    const isAsc = orderBy === property && order === "asc";
-    setOrder(isAsc ? "desc" : "asc");
-    setOrderBy(property);
+    if (initialRender) {
+      initialPageLoadSort === "asc"
+        ? setInitialPageLoadSort("desc")
+        : setInitialPageLoadSort("asc");
+      console.log("initial page sort requested");
+      return;
+    }
+    if (sortingStrategy === "asc") {
+      setSortingStrategy("desc");
+    } else {
+      setSortingStrategy("asc");
+    }
+
+    console.log("sort breeds on handle request");
   };
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {

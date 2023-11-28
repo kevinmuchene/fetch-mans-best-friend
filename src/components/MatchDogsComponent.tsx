@@ -3,12 +3,14 @@ import DogCard from "./DogCard";
 import { useContext, useEffect, useState } from "react";
 import { DogContext } from "../context/DogContext";
 import DogAction from "../Actions/DogAction";
+import { DogZipCode } from "../common/Interfaces";
 
 function FavDogsComponent() {
   const { favoriteDogsId, setMatchDogData, matchDogData } =
     useContext(DogContext);
 
-  const [zipcode, setZipcode] = useState([]);
+  const [zipcode, setZipcode] = useState<DogZipCode[]>([]);
+
   useEffect(() => {
     if (favoriteDogsId.length > 0) {
       const fetchFavoriteMatchDog = async () => {
@@ -18,13 +20,14 @@ function FavDogsComponent() {
           );
 
           const matchId = [];
+          const zipCode = [];
 
           matchId.push(matchResponse.match);
 
           const dogsResponse = await DogAction.fetchDogs(matchId);
-
+          zipCode.push(dogsResponse[0].zip_code);
           setMatchDogData(dogsResponse);
-          setZipcode([dogsResponse[0].zip_code]);
+          setZipcode(zipCode);
         } catch (err) {
           console.log(err);
         }

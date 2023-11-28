@@ -1,26 +1,22 @@
-import React from "react";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import { Slide, Typography, Card, CardContent } from "@mui/material";
-import { TransitionProps } from "@mui/material/transitions";
+import { Typography, Card, CardContent } from "@mui/material";
 
-const Transition = React.forwardRef(function Transition(
-  props: TransitionProps & {
-    children: React.ReactElement<any, any>;
-  },
-  ref: React.Ref<unknown>
-) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
+import React from "react";
 
 export default function BreedBasedActivity({
   open,
   handleClose,
   aiGeneratedActivities,
   dogName,
+}: {
+  open: boolean;
+  handleClose: () => void;
+  aiGeneratedActivities: any;
+  dogName: string;
 }) {
   const isObjectEmpty = (obj: {}) => Object.keys(obj).length === 0;
 
@@ -28,7 +24,6 @@ export default function BreedBasedActivity({
     <React.Fragment>
       <Dialog
         open={open}
-        TransitionComponent={Transition}
         keepMounted
         onClose={handleClose}
         aria-describedby="alert-dialog-slide-description"
@@ -43,7 +38,7 @@ export default function BreedBasedActivity({
             Object.entries(aiGeneratedActivities).map(([key, data]) => (
               <Card key={key} sx={{ minWidth: 275, margin: "1em" }}>
                 <CardContent>
-                  <Typography variant="body2">{data}</Typography>
+                  <Typography variant="body2">{data as string}</Typography>
                 </CardContent>
               </Card>
             ))

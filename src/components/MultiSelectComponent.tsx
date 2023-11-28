@@ -19,11 +19,10 @@ const MenuProps = {
 const MultiSelectComponent = React.memo(function MultiSelectComponent({
   selectedItems = [],
   setSelectedItems,
-  // items,
   label,
 }) {
   const { breedData } = useContext(DogContext);
-  // const [breedsData] = useFetchBreeds();
+
   const handleChange = React.useCallback((event) => {
     setSelectedItems("breeds", event.target.value);
   }, []);

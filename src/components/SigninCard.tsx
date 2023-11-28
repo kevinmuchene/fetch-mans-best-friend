@@ -33,7 +33,6 @@ const SignIn = function SiginCard() {
           console.log("Error in signing in user" + err);
         });
       resetForm();
-      // navigate("/dogs");
     },
   });
 
