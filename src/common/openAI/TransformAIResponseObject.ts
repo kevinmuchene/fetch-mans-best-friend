@@ -20,7 +20,7 @@ const useGenerateActivities = () => {
     const params = {
       headers: {
         // Authorization: `Bearer ${import.meta.env.VITE_OPENAI}`,
-        Authorization: `Bearer ${process.env.VITE_OPENAIAPI}`,
+        Authorization: `Bearer ${import.meta.env.VITE_OPENAI}`,
 
         "Content-Type": "application/json",
       },
