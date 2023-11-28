@@ -28,7 +28,8 @@ const router = createBrowserRouter(
 function App() {
   const [breedsData] = useFetchBreeds();
   const { setBreedData } = useContext(DogContext);
-
+  // console.log(process.env.OPENAIAPI);
+  console.log(import.meta.env.VITE_OPENAIAPI);
   useEffect(() => {
     setBreedData(breedsData);
   }, [breedsData]);

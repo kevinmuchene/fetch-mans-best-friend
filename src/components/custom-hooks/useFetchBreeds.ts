@@ -6,7 +6,6 @@ export const useFetchBreeds = () => {
 
   useEffect(() => {
     if (breedsData.length === 0) {
-      console.log("Breed request was made");
       dogAction
         .fetchBreed()
         .then((res) => setBreedsData(res))
