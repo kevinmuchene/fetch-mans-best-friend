@@ -263,7 +263,7 @@ export default function DogTableResult({
     }
   };
 
-  const handleClick = (event: React.MouseEvent<unknown>, id: string) => {
+  const handleClick = (id: string) => {
     const selectedIndex = selected.indexOf(id);
     let newSelected: string[] = [];
     // console.log(event);
@@ -284,7 +284,7 @@ export default function DogTableResult({
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
-    // console.log(event);
+    console.log(event);
     setInitialRender(false);
 
     if (newPage > page && nextUrl) {
@@ -343,7 +343,7 @@ export default function DogTableResult({
                   return (
                     <TableRow
                       hover
-                      onClick={(event) => handleClick(event, dog.id)}
+                      onClick={() => handleClick(dog.id)}
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
