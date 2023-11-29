@@ -39,7 +39,6 @@ function DogFilterComponent({ setApiResultObject }: DogFilterComponentProps) {
     initialValues: initialValues,
     validationSchema: Yup.object(ageValidationSchema),
     onSubmit: (values, { resetForm }) => {
-      console.log(values);
       const validZipCodes = processZipCodes(values.zipCodes);
 
       let filterValues = {
@@ -64,13 +63,9 @@ function DogFilterComponent({ setApiResultObject }: DogFilterComponentProps) {
   });
 
   const handleSubmit = (url: string) => {
-    console.log(url);
-
     dogAction
       .searchDogs(url)
       .then((res) => {
-        // debugger;
-        console.log(res);
         setApiResultObject(res);
       })
       .catch((err) => {
@@ -96,7 +91,7 @@ function DogFilterComponent({ setApiResultObject }: DogFilterComponentProps) {
     <Paper sx={{ width: "100%", mb: 2 }}>
       <Box sx={{ mt: 1 }}>
         <Typography color="orange" align="center" variant="h4">
-          Search By ...
+          Filter Dogs
         </Typography>
       </Box>
       <Box

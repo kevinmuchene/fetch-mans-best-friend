@@ -1,12 +1,14 @@
-import { Typography, Container, Grid } from "@mui/material";
+import { Typography, Container, Grid, Button, Alert } from "@mui/material";
 import DogCard from "./DogCard";
 import { useContext, useEffect, useState } from "react";
 import { DogContext } from "../context/DogContext";
 import DogAction from "../Actions/DogAction";
+import { useNavigate } from "react-router-dom";
 
 function FavDogsComponent() {
   const { favoriteDogsId, setMatchDogData, matchDogData } =
     useContext(DogContext);
+  const navigate = useNavigate();
 
   const [zipcode, setZipcode] = useState<string[]>([]);
 
@@ -15,7 +17,7 @@ function FavDogsComponent() {
       const fetchFavoriteMatchDog = async () => {
         try {
           const matchResponse = await DogAction.fetchFavoriteMatch(
-            favoriteDogsId
+            favoriteDogsId.slice(0, 100)
           );
 
           const matchId = [];
@@ -39,11 +41,30 @@ function FavDogsComponent() {
     <Container>
       <Grid container justifyContent="center" alignItems="center">
         <Grid item md={12}>
-          <Typography variant="h4" align="center" color="orange" sx={{ m: 3 }}>
-            A Match For You
-          </Typography>
+          <Grid
+            container
+            item
+            md={12}
+            alignItems="center"
+            justifyContent="space-around"
+          >
+            <Grid item>
+              <Typography variant="h4" color="orange">
+                A Match For You
+              </Typography>
+            </Grid>
+
+            <Grid item>
+              <Button onClick={() => navigate("/dogs")}>Back</Button>
+            </Grid>
+          </Grid>
         </Grid>
         <Grid item md={12}>
+          {matchDogData.length == 0 && (
+            <Alert sx={{ marginTop: "1em" }} severity="error">
+              Filter Again
+            </Alert>
+          )}
           {matchDogData.length > 0 && <DogCard zipcode={zipcode} />}
         </Grid>
       </Grid>

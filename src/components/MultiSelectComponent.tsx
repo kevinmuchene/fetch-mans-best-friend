@@ -4,16 +4,15 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import { Checkbox, ListItemText } from "@mui/material";
-import React, { useContext } from "react";
-import { DogContext } from "../context/DogContext";
+import React from "react";
 import { FormikErrors } from "formik";
 import { TypeIntialValues } from "../common/Interfaces";
+import { useFetchBreeds } from "./custom-hooks/useFetchBreeds";
 
 const MenuProps = {
   PaperProps: {
     style: {
       maxHeight: "40vh",
-      // overflow: "auto",
     },
   },
 };
@@ -32,7 +31,7 @@ const MultiSelectComponent: React.FC<SelectBreedComponentProps> = ({
   setSelectedItems,
   label,
 }) => {
-  const { breedData } = useContext(DogContext);
+  const [breedsData] = useFetchBreeds();
 
   const handleChange = React.useCallback(
     (event: { target: { value: any } }) => {
@@ -40,8 +39,6 @@ const MultiSelectComponent: React.FC<SelectBreedComponentProps> = ({
     },
     []
   );
-
-  console.log("Multi-select component");
 
   return (
     <FormControl sx={{ width: "100%" }} size="medium">
@@ -56,7 +53,7 @@ const MultiSelectComponent: React.FC<SelectBreedComponentProps> = ({
         renderValue={(selected) => selected.join(", ")}
         MenuProps={MenuProps}
       >
-        {breedData.map((item) => (
+        {breedsData.map((item) => (
           <MenuItem key={item} value={item}>
             <Checkbox checked={selectedItems.indexOf(item) > -1} />
             <ListItemText primary={item} />

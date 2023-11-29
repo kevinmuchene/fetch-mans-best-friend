@@ -11,11 +11,9 @@ const useGenerateActivities = () => {
   const { setAiGeneratedActivities } = useContext(DogContext);
 
   const generatedActivityByAI = async (dogData: data) => {
-    console.log("Calling generated activites");
-
     // if (isObjectEmpty(aiGeneratedActivities) && !isObjectEmpty(dogData)) {
     const userString = `Dog's name is ${dogData.name}, and breed is ${dogData.breed}`;
-    console.log(userString);
+
     const url = "https://api.openai.com/v1/chat/completions";
     const params = {
       headers: {

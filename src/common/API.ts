@@ -23,7 +23,6 @@ const APIs = {
   },
 
   fetchAllDogs: function (sort = "asc") {
-    console.log(`${apiMainURL}${searchAPI}?&size=20&sort=breed:${sort}`);
     return `${apiMainURL}${searchAPI}?&size=20&sort=breed:${sort}`;
   },
   fetchDogs: function () {

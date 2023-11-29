@@ -17,6 +17,7 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import { useNavigate } from "react-router-dom";
 import { DogContext } from "../context/DogContext";
 import DogAction from "../Actions/DogAction";
+import SortIcon from "@mui/icons-material/Sort";
 
 interface Dog {
   id: string;
@@ -42,7 +43,7 @@ const isObjectEmpty = (obj: {}) => Object.keys(obj).length === 0;
 interface HeadCell {
   disablePadding: boolean;
   id: keyof Dog;
-  label: string;
+  label: any;
   numeric: boolean;
 }
 
@@ -57,7 +58,7 @@ const headCells: readonly HeadCell[] = [
     id: "breed",
     numeric: true,
     disablePadding: true,
-    label: "Breed",
+    label: <Button endIcon={<SortIcon />}>Breed</Button>,
   },
   {
     id: "age",
@@ -105,7 +106,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
           <TableCell
             key={headCell.id}
             align={headCell.numeric ? "right" : "left"}
-            padding={headCell.disablePadding ? "none" : "normal"}
+            // padding={headCell.disablePadding ? "none" : "normal"}
           >
             {headCell.id === "breed" ? (
               <TableSortLabel onClick={createSortHandler(headCell.id)}>
@@ -149,7 +150,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
           variant="subtitle1"
           component="div"
         >
-          {numSelected} Favorite
+          {numSelected} {numSelected > 1 ? "Favorites" : "Favorite"}
         </Typography>
       )}
     </Toolbar>
@@ -188,7 +189,6 @@ export default function DogTableResult({
   // console.log(tablesData);
   useEffect(() => {
     const fetchDogData = async () => {
-      console.log("intial render is being called" + initialRender);
       if (initialRender && isObjectEmpty(apiResultObject)) {
         try {
           const allDogsResponse = await DogAction.fetchAllDogs(
@@ -207,14 +207,13 @@ export default function DogTableResult({
           console.error("Error fetching dog data:", error);
         }
       }
-      // debugger;
-      if (apiResultObject.resultIds.length > 0) {
+
+      if (apiResultObject?.resultIds?.length) {
         setPage(0);
         setInitialRender(false);
         const dogDetailsResponse = await DogAction.fetchDogs(
           apiResultObject.resultIds
         );
-        console.log("is called");
 
         setTablesData(dogDetailsResponse);
         setTablePaginationCount(apiResultObject.total);
@@ -226,7 +225,6 @@ export default function DogTableResult({
   }, [apiResultObject, initialPageLoadSort]);
 
   const fetchNextData = async (url: string) => {
-    console.log("loading next data");
     try {
       setIsLoading(true);
       const nextPageResponse = await DogAction.fetchNextPageData(url);
@@ -255,7 +253,7 @@ export default function DogTableResult({
       initialPageLoadSort === "asc"
         ? setInitialPageLoadSort("desc")
         : setInitialPageLoadSort("asc");
-      console.log("initial page sort requested");
+
       return;
     }
     if (sortingStrategy === "asc") {
@@ -263,14 +261,12 @@ export default function DogTableResult({
     } else {
       setSortingStrategy("asc");
     }
-
-    console.log("sort breeds on handle request");
   };
 
   const handleClick = (event: React.MouseEvent<unknown>, id: string) => {
     const selectedIndex = selected.indexOf(id);
     let newSelected: string[] = [];
-    console.log(event);
+    // console.log(event);
     if (selectedIndex === -1) {
       newSelected = newSelected.concat(selected, id);
     } else if (selectedIndex === 0) {
@@ -288,7 +284,7 @@ export default function DogTableResult({
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
-    console.log(event);
+    // console.log(event);
     setInitialRender(false);
 
     if (newPage > page && nextUrl) {
@@ -322,7 +318,16 @@ export default function DogTableResult({
     <>
       <Box sx={{ width: "100%", mt: 4 }}>
         <Paper sx={{ width: "100%", mb: 2 }}>
+          <Button
+            sx={{ margin: "1em" }}
+            variant="contained"
+            disabled={selected.length ? false : true}
+            onClick={() => matchMyFavDogs()}
+          >
+            Match My Fav Dogs
+          </Button>
           <EnhancedTableToolbar numSelected={selected.length} />
+
           <TableContainer>
             <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle">
               <EnhancedTableHead
@@ -396,13 +401,6 @@ export default function DogTableResult({
           {isLoading && <Alert severity="info">Loading Next Data</Alert>}
           {error && <Alert severity="info">Error Loading Next Data</Alert>}
         </Paper>
-        <Button
-          variant="contained"
-          disabled={selected ? false : true}
-          onClick={() => matchMyFavDogs()}
-        >
-          Match My Fav Dogs
-        </Button>
       </Box>
     </>
   );
