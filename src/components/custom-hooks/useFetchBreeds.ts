@@ -10,8 +10,6 @@ export const useFetchBreeds = () => {
         .fetchBreed()
         .then((res) => setBreedsData(res))
         .catch((err) => console.log(err));
-    } else {
-      console.log("Breeds data already available");
     }
   }, []);
 

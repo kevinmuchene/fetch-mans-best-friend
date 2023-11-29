@@ -30,13 +30,13 @@ export default function BreedBasedActivity({
         maxWidth={"md"}
         fullWidth={true}
       >
-        <DialogTitle>Activities For {dogName}</DialogTitle>
+        <DialogTitle color="orange">Activities For {dogName}</DialogTitle>
         <DialogContent>
           {isObjectEmpty(aiGeneratedActivities) ? (
             <p>No activities available.</p>
           ) : (
             Object.entries(aiGeneratedActivities).map(([key, data]) => (
-              <Card key={key} sx={{ minWidth: 275, margin: "1em" }}>
+              <Card key={key} sx={{ margin: "1em" }}>
                 <CardContent>
                   <Typography variant="body2">{data as string}</Typography>
                 </CardContent>

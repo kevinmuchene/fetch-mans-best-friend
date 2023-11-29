@@ -24,8 +24,7 @@ const SignIn = function SiginCard() {
     onSubmit: (values, { resetForm }) => {
       authAction
         .signin(values)
-        .then((res) => {
-          console.log(res);
+        .then(() => {
           navigate("/dogs");
         })
         .catch((err) => {

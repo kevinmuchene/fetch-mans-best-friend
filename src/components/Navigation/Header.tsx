@@ -14,8 +14,8 @@ export default function Header() {
   const signOutUser = () => {
     authService
       .signout()
-      .then((res) => {
-        console.log(res + "successfully signed out user");
+      .then(() => {
+        // console.log(res + "successfully signed out user");
       })
       .catch((err) => {
         console.log("Error in signing out user" + err);
@@ -36,6 +36,7 @@ export default function Header() {
         <Toolbar>
           <Hidden mdDown>
             <Box
+              onClick={() => navigate("/dogs")}
               component="img"
               sx={{
                 maxHeight: { xs: 50, md: 100 },
@@ -53,6 +54,7 @@ export default function Header() {
             component="div"
             sx={{ flexGrow: 1, padding: "0.5em" }}
             color={"orange"}
+            onClick={() => navigate("/dogs")}
           >
             Man's Best Friend
           </Typography>
