@@ -116,7 +116,7 @@ function DogFilterComponent({ setApiResultObject }: DogFilterComponentProps) {
               fullWidth
               color="warning"
               name="zipCodes"
-              label="Enter One or Many Zipcodes"
+              label="Enter Zipcode(s)"
               id="zipCodes"
               autoComplete="zipCodes"
               value={formik.values.zipCodes}
