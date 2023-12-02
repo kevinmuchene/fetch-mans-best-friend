@@ -7,7 +7,6 @@ import { Checkbox, ListItemText } from "@mui/material";
 import React from "react";
 import { FormikErrors } from "formik";
 import { TypeIntialValues } from "../common/Interfaces";
-import { useFetchBreeds } from "./custom-hooks/useFetchBreeds";
 
 const MenuProps = {
   PaperProps: {
@@ -24,15 +23,15 @@ interface SelectBreedComponentProps {
     value: any
   ) => Promise<void> | Promise<FormikErrors<TypeIntialValues>>;
   label: string;
+  dropDownItems: string[];
 }
 
 const MultiSelectComponent: React.FC<SelectBreedComponentProps> = ({
   selectedItems,
   setSelectedItems,
   label,
+  dropDownItems,
 }) => {
-  const [breedsData] = useFetchBreeds();
-
   const handleChange = React.useCallback(
     (event: { target: { value: any } }) => {
       setSelectedItems("breeds", event.target.value);
@@ -53,7 +52,7 @@ const MultiSelectComponent: React.FC<SelectBreedComponentProps> = ({
         renderValue={(selected) => selected.join(", ")}
         MenuProps={MenuProps}
       >
-        {breedsData.map((item) => (
+        {dropDownItems.map((item) => (
           <MenuItem key={item} value={item}>
             <Checkbox checked={selectedItems.indexOf(item) > -1} />
             <ListItemText primary={item} />
