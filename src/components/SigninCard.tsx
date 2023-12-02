@@ -11,26 +11,37 @@ import {
   signInValidationSchema,
 } from "../common/YupValidation";
 import * as Yup from "yup";
+import { useAppDispatch } from "../redux/Hooks";
+import { setBreeds } from "../redux/slices/breedDataSlice";
+import DogAction from "../Actions/DogAction";
 
 const SignIn = function SiginCard() {
   const navigate = useNavigate();
 
+  const disptach = useAppDispatch();
+
   const formik = useFormik({
     initialValues: {
-      name: "",
-      email: "",
+      name: "kevin",
+      email: "kevin@gmail.com",
     },
     validationSchema: Yup.object(signInValidationSchema),
     onSubmit: (values, { resetForm }) => {
       authAction
         .signin(values)
         .then(() => {
+          return DogAction.fetchBreed();
+        })
+        .then((breeds) => {
+          disptach(setBreeds(breeds));
           navigate("/dogs");
         })
         .catch((err) => {
           console.log("Error in signing in user" + err);
+        })
+        .finally(() => {
+          resetForm();
         });
-      resetForm();
     },
   });
 
