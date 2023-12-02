@@ -8,6 +8,8 @@ import { CustomErrorDiv, ageValidationSchema } from "../common/YupValidation";
 import { createUrl, processZipCodes } from "../common/HelperFunctions";
 import { DogContext } from "../context/DogContext";
 import { TypeIntialValues } from "../common/Interfaces";
+import { useAppSelector } from "../redux/Hooks";
+import { selectBreeds } from "../redux/slices/breedDataSlice";
 
 interface apiResultObject {
   next: string;
@@ -34,6 +36,8 @@ let initialValues: TypeIntialValues = {
 function DogFilterComponent({ setApiResultObject }: DogFilterComponentProps) {
   const { sortingStrategy, filterValues, setFilterValues } =
     useContext(DogContext);
+
+  const breedsObject = useAppSelector(selectBreeds);
 
   const formik = useFormik({
     initialValues: initialValues,
@@ -107,7 +111,7 @@ function DogFilterComponent({ setApiResultObject }: DogFilterComponentProps) {
               setSelectedItems={(field: string, value: any) =>
                 formik.setFieldValue(field, value)
               }
-              // items={breedsData}
+              dropDownItems={breedsObject.breed}
               label={"Breed"}
             />
           </Grid>
