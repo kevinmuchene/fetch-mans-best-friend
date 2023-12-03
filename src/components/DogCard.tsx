@@ -9,6 +9,8 @@ import BreedBasedActivity from "./BreedBasedActvity";
 import useGenerateActivities from "../common/openAI/TransformAIResponseObject";
 import { DogContext } from "../context/DogContext";
 import { useFetchLocationByZip } from "./custom-hooks/useFetchLocationByZip";
+import { useAppSelector } from "../redux/Hooks";
+import { selectMatchDog } from "../redux/slices/matchDogSlice";
 
 const StyledTypography = styled(Typography)(() => ({
   fontWeight: "bold",
@@ -22,8 +24,8 @@ const StyledTypography = styled(Typography)(() => ({
 export default function DogCard({ zipcode }: { zipcode: string[] }) {
   const [open, setOpen] = useState<boolean>(false);
 
-  const { aiGeneratedActivities, matchDogData, matchLocation } =
-    useContext(DogContext);
+  const { aiGeneratedActivities, matchLocation } = useContext(DogContext);
+  const { matchDog } = useAppSelector(selectMatchDog);
 
   const [generatedActivityByAI] = useGenerateActivities();
 
@@ -38,7 +40,7 @@ export default function DogCard({ zipcode }: { zipcode: string[] }) {
   };
 
   useEffect(() => {
-    generatedActivityByAI(matchDogData[0]);
+    generatedActivityByAI(matchDog[0]);
   }, []);
 
   return (
@@ -47,32 +49,32 @@ export default function DogCard({ zipcode }: { zipcode: string[] }) {
         open={open}
         handleClose={handleClose}
         aiGeneratedActivities={aiGeneratedActivities}
-        dogName={matchDogData[0].name}
+        dogName={matchDog[0].name}
       />
       <Box display={"flex"} justifyContent={"center"} sx={{ my: 3 }}>
         <Card>
           <CardMedia
             sx={{ height: 240 }}
-            image={matchDogData[0].img}
-            title={matchDogData[0].name}
+            image={matchDog[0].img}
+            title={matchDog[0].name}
           />
           <CardContent>
             <Grid container spacing={2}>
               <Grid item md={6} xs={12}>
                 <Typography component={"span"}>Name: </Typography>
-                <StyledTypography>{matchDogData[0].name}</StyledTypography>
+                <StyledTypography>{matchDog[0].name}</StyledTypography>
               </Grid>
               <Grid item md={6} xs={12}>
                 <Typography component={"span"}>Age: </Typography>
-                <StyledTypography>{matchDogData[0].age}</StyledTypography>
+                <StyledTypography>{matchDog[0].age}</StyledTypography>
               </Grid>
               <Grid item md={6} xs={12}>
                 <Typography component={"span"}>Breed: </Typography>
-                <StyledTypography>{matchDogData[0].breed}</StyledTypography>
+                <StyledTypography>{matchDog[0].breed}</StyledTypography>
               </Grid>
               <Grid item md={6} xs={12}>
                 <Typography component={"span"}>Zipcode: </Typography>
-                <StyledTypography>{matchDogData[0].zip_code}</StyledTypography>
+                <StyledTypography>{matchDog[0].zip_code}</StyledTypography>
               </Grid>
             </Grid>
             {matchLocation.length > 0 ? (
@@ -114,7 +116,7 @@ export default function DogCard({ zipcode }: { zipcode: string[] }) {
               sx={{ borderRadius: 1 }}
               color="success"
             >
-              Activities for {matchDogData[0].name}
+              Activities for {matchDog[0].name}
             </Button>
             {/* <LinearProgress color="inherit" /> */}
             {isObjectEmpty(aiGeneratedActivities) && (
