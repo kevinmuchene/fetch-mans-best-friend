@@ -2,10 +2,6 @@ import { createContext, useState } from "react";
 import { Dog, FilterValues, Location } from "../common/Interfaces";
 
 interface DogContextType {
-  breedData: string[];
-  setBreedData: (breedData: string[]) => void;
-  favoriteDogsId: string[];
-  setFavoriteDogsId: (newFavoriteDogs: string[]) => void;
   aiGeneratedActivities: any;
   setAiGeneratedActivities: (activities: any) => void;
   matchDogData: Dog[];
@@ -20,10 +16,6 @@ interface DogContextType {
   setInitialPageLoadSort: (strategy: string) => void;
 }
 const defaultContextValue: DogContextType = {
-  breedData: [],
-  setBreedData: () => {},
-  favoriteDogsId: [],
-  setFavoriteDogsId: () => {},
   aiGeneratedActivities: {},
   setAiGeneratedActivities: () => {},
   matchDogData: [],
@@ -50,11 +42,9 @@ interface DogProviderProps {
 export const DogContext = createContext(defaultContextValue);
 
 export const DogProvider: React.FC<DogProviderProps> = ({ children }) => {
-  const [favoriteDogsId, setFavoriteDogsId] = useState<string[]>([]);
   const [aiGeneratedActivities, setAiGeneratedActivities] = useState<any>({});
   const [matchDogData, setMatchDogData] = useState<Dog[]>([]);
   const [matchLocation, setMatchLocation] = useState<any>([]);
-  const [breedData, setBreedData] = useState<string[]>([]);
   const [sortingStrategy, setSortingStrategy] = useState<string>("asc");
   const [filterValues, setFilterValues] = useState<FilterValues>({
     breeds: [],
@@ -67,10 +57,6 @@ export const DogProvider: React.FC<DogProviderProps> = ({ children }) => {
   return (
     <DogContext.Provider
       value={{
-        breedData,
-        setBreedData,
-        favoriteDogsId,
-        setFavoriteDogsId,
         aiGeneratedActivities,
         setAiGeneratedActivities,
         matchDogData,
