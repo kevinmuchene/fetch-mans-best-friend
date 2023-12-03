@@ -4,6 +4,7 @@ import favoriteDogsIdReducer from "./slices/favoriteDogsIdSlice";
 import matchDogReducer from "./slices/matchDogSlice";
 import matchLocationReducer from "./slices/matchLocationSlice";
 import filterValuesReducer from "./slices/filterValuesSlice";
+import aiGeneratedActivitesReducer from "./slices/aiGeneratedActivitesSlice";
 
 export const rootReducer = combineReducers({
   breeds: breedsReducer,
@@ -11,4 +12,5 @@ export const rootReducer = combineReducers({
   matchDog: matchDogReducer,
   matchLocationData: matchLocationReducer,
   filterValueData: filterValuesReducer,
+  aIGeneratedActivies: aiGeneratedActivitesReducer,
 });
