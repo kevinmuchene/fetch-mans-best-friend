@@ -4,20 +4,23 @@ import { useContext, useEffect, useState } from "react";
 import { DogContext } from "../context/DogContext";
 import DogAction from "../Actions/DogAction";
 import { useNavigate } from "react-router-dom";
+import { useAppSelector } from "../redux/Hooks";
+import { selectFavoriteIDs } from "../redux/slices/favoriteDogsIdSlice";
 
 function FavDogsComponent() {
-  const { favoriteDogsId, setMatchDogData, matchDogData } =
-    useContext(DogContext);
+  const { setMatchDogData, matchDogData } = useContext(DogContext);
   const navigate = useNavigate();
+
+  const favoriteIDs = useAppSelector(selectFavoriteIDs);
 
   const [zipcode, setZipcode] = useState<string[]>([]);
 
   useEffect(() => {
-    if (favoriteDogsId.length > 0) {
+    if (favoriteIDs.favoriteDogsId.length > 0) {
       const fetchFavoriteMatchDog = async () => {
         try {
           const matchResponse = await DogAction.fetchFavoriteMatch(
-            favoriteDogsId.slice(0, 100)
+            favoriteIDs.favoriteDogsId.slice(0, 100)
           );
 
           const matchId = [];
@@ -35,7 +38,7 @@ function FavDogsComponent() {
       };
       fetchFavoriteMatchDog();
     }
-  }, [favoriteDogsId]);
+  }, [favoriteIDs]);
 
   return (
     <Container>
