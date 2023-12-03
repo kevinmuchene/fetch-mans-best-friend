@@ -1,14 +1,14 @@
 import axios from "axios";
-import { useContext } from "react";
 import { openAIBreedSuggestionFunction } from "./openai";
-import { DogContext } from "../../context/DogContext";
+import { useAppDispatch } from "../../redux/Hooks";
+import { setAIGneratedActivities } from "../../redux/slices/aiGeneratedActivitesSlice";
 
 interface data {
   name: string;
   breed: string;
 }
 const useGenerateActivities = () => {
-  const { setAiGeneratedActivities } = useContext(DogContext);
+  const dispatch = useAppDispatch();
 
   const generatedActivityByAI = async (dogData: data) => {
     // if (isObjectEmpty(aiGeneratedActivities) && !isObjectEmpty(dogData)) {
@@ -34,8 +34,7 @@ const useGenerateActivities = () => {
         response.data.choices[0].message.function_call.arguments
       );
 
-      // console.log(res);
-      setAiGeneratedActivities(res);
+      dispatch(setAIGneratedActivities(res));
     } catch (error) {
       console.log("Error", error);
     }
