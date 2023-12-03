@@ -4,14 +4,14 @@ import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Button from "@mui/material/Button";
 import { Typography, Grid, Box, styled } from "@mui/material";
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import BreedBasedActivity from "./BreedBasedActvity";
 import useGenerateActivities from "../common/openAI/TransformAIResponseObject";
-import { DogContext } from "../context/DogContext";
 import { useFetchLocationByZip } from "./custom-hooks/useFetchLocationByZip";
 import { useAppSelector } from "../redux/Hooks";
 import { selectMatchDog } from "../redux/slices/matchDogSlice";
 import { selectMatchLocation } from "../redux/slices/matchLocationSlice";
+import { selectAIGeneratedActivies } from "../redux/slices/aiGeneratedActivitesSlice";
 
 const StyledTypography = styled(Typography)(() => ({
   fontWeight: "bold",
@@ -24,11 +24,10 @@ const StyledTypography = styled(Typography)(() => ({
 
 export default function DogCard({ zipcode }: { zipcode: string[] }) {
   const [open, setOpen] = useState<boolean>(false);
-
-  const { aiGeneratedActivities } = useContext(DogContext);
   const { matchDog } = useAppSelector(selectMatchDog);
   const { locationData } = useAppSelector(selectMatchLocation);
 
+  const { generatedActivities } = useAppSelector(selectAIGeneratedActivies);
   const [generatedActivityByAI] = useGenerateActivities();
 
   useFetchLocationByZip(zipcode);
@@ -50,7 +49,7 @@ export default function DogCard({ zipcode }: { zipcode: string[] }) {
       <BreedBasedActivity
         open={open}
         handleClose={handleClose}
-        aiGeneratedActivities={aiGeneratedActivities}
+        aiGeneratedActivities={generatedActivities}
         dogName={matchDog[0].name}
       />
       <Box display={"flex"} justifyContent={"center"} sx={{ my: 3 }}>
@@ -110,10 +109,10 @@ export default function DogCard({ zipcode }: { zipcode: string[] }) {
           </CardContent>
           <CardActions sx={{ justifyContent: "center", py: 2 }}>
             <Button
-              disabled={isObjectEmpty(aiGeneratedActivities) ? true : false}
+              disabled={isObjectEmpty(generatedActivities) ? true : false}
               onClick={handleClickOpen}
               variant={
-                isObjectEmpty(aiGeneratedActivities) ? "outlined" : "contained"
+                isObjectEmpty(generatedActivities) ? "outlined" : "contained"
               }
               sx={{ borderRadius: 1 }}
               color="success"
@@ -121,7 +120,7 @@ export default function DogCard({ zipcode }: { zipcode: string[] }) {
               Activities for {matchDog[0].name}
             </Button>
             {/* <LinearProgress color="inherit" /> */}
-            {isObjectEmpty(aiGeneratedActivities) && (
+            {isObjectEmpty(generatedActivities) && (
               <Typography color={"blue"} sx={{ marginLeft: "1em" }}>
                 Getting Activities...
               </Typography>
