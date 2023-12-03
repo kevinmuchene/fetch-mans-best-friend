@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useContext, useEffect } from "react";
+import { Dispatch, SetStateAction, useEffect } from "react";
 import { TextField, Button, Box, Grid, Typography, Paper } from "@mui/material";
 import { useFormik } from "formik";
 import SelectBreedComponent from "./MultiSelectComponent";
@@ -6,7 +6,6 @@ import dogAction from "../Actions/DogAction";
 import * as Yup from "yup";
 import { CustomErrorDiv, ageValidationSchema } from "../common/YupValidation";
 import { createUrl, processZipCodes } from "../common/HelperFunctions";
-import { DogContext } from "../context/DogContext";
 import { TypeIntialValues } from "../common/Interfaces";
 import { useAppDispatch, useAppSelector } from "../redux/Hooks";
 import { selectBreeds } from "../redux/slices/breedDataSlice";
@@ -14,6 +13,7 @@ import {
   selectFilterValues,
   setFilterValuesData,
 } from "../redux/slices/filterValuesSlice";
+import { selectSortingStrategy } from "../redux/slices/sortingStrategySlice";
 
 interface apiResultObject {
   next: string;
@@ -38,11 +38,10 @@ let initialValues: TypeIntialValues = {
 };
 
 function DogFilterComponent({ setApiResultObject }: DogFilterComponentProps) {
-  const { sortingStrategy } = useContext(DogContext);
-
   const breedsObject = useAppSelector(selectBreeds);
   const disptach = useAppDispatch();
   const { filterValues } = useAppSelector(selectFilterValues);
+  const { sortingStrategy } = useAppSelector(selectSortingStrategy);
 
   const formik = useFormik({
     initialValues: initialValues,
