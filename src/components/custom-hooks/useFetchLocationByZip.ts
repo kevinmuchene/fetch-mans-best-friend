@@ -1,16 +1,17 @@
-import { useEffect, useContext } from "react";
+import { useEffect } from "react";
 import locationAction from "../../Actions/LocationAction";
-import { DogContext } from "../../context/DogContext";
+import { useAppDispatch } from "../../redux/Hooks";
+import { setMatchLocationData } from "../../redux/slices/matchLocationSlice";
 
 export const useFetchLocationByZip = (zipsCode: string[]) => {
-  const { setMatchLocation } = useContext(DogContext);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (zipsCode[0]) {
       locationAction
         .fetchLocationByZip(zipsCode)
         .then((res) => {
-          setMatchLocation(res);
+          dispatch(setMatchLocationData(res));
         })
         .catch((error) => {
           console.log(error);
