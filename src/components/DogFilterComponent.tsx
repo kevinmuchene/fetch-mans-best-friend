@@ -8,8 +8,12 @@ import { CustomErrorDiv, ageValidationSchema } from "../common/YupValidation";
 import { createUrl, processZipCodes } from "../common/HelperFunctions";
 import { DogContext } from "../context/DogContext";
 import { TypeIntialValues } from "../common/Interfaces";
-import { useAppSelector } from "../redux/Hooks";
+import { useAppDispatch, useAppSelector } from "../redux/Hooks";
 import { selectBreeds } from "../redux/slices/breedDataSlice";
+import {
+  selectFilterValues,
+  setFilterValuesData,
+} from "../redux/slices/filterValuesSlice";
 
 interface apiResultObject {
   next: string;
@@ -34,10 +38,11 @@ let initialValues: TypeIntialValues = {
 };
 
 function DogFilterComponent({ setApiResultObject }: DogFilterComponentProps) {
-  const { sortingStrategy, filterValues, setFilterValues } =
-    useContext(DogContext);
+  const { sortingStrategy } = useContext(DogContext);
 
   const breedsObject = useAppSelector(selectBreeds);
+  const disptach = useAppDispatch();
+  const { filterValues } = useAppSelector(selectFilterValues);
 
   const formik = useFormik({
     initialValues: initialValues,
@@ -59,7 +64,7 @@ function DogFilterComponent({ setApiResultObject }: DogFilterComponentProps) {
         validZipCodes,
         sortingStrategy
       );
-      setFilterValues(filterValues);
+      disptach(setFilterValuesData(filterValues));
       handleSubmit(url);
 
       resetForm();
