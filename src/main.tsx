@@ -6,15 +6,12 @@ import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
-import { DogProvider } from "./context/DogContext.tsx";
 import { store } from "./redux/Store.ts";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <Provider store={store}>
-      <DogProvider>
-        <App />
-      </DogProvider>
+      <App />
     </Provider>
   </React.StrictMode>
 );
