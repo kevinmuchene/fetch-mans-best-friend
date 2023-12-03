@@ -18,6 +18,8 @@ import { useNavigate } from "react-router-dom";
 import { DogContext } from "../context/DogContext";
 import DogAction from "../Actions/DogAction";
 import SortIcon from "@mui/icons-material/Sort";
+import { useAppDispatch } from "../redux/Hooks";
+import { setFavoriteIDs } from "../redux/slices/favoriteDogsIdSlice";
 
 interface Dog {
   id: string;
@@ -173,9 +175,10 @@ export default function DogTableResult({
   const [tablePaginationCount, setTablePaginationCount] = useState<number>(0);
   const [initialRender, setInitialRender] = useState<boolean>(true);
 
+  const dispatch = useAppDispatch();
+
   /**useContext hooks */
   const {
-    setFavoriteDogsId,
     setAiGeneratedActivities,
     setMatchDogData,
     sortingStrategy,
@@ -305,10 +308,8 @@ export default function DogTableResult({
 
   const isSelected = (id: string) => selected.indexOf(id) !== -1;
 
-  // console.log(selected);
-
   const matchMyFavDogs = () => {
-    setFavoriteDogsId(selected);
+    dispatch(setFavoriteIDs(selected));
     setMatchDogData([]);
     setAiGeneratedActivities({});
     navigate("/favoritedogs");
