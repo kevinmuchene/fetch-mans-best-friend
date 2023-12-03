@@ -11,6 +11,7 @@ import { DogContext } from "../context/DogContext";
 import { useFetchLocationByZip } from "./custom-hooks/useFetchLocationByZip";
 import { useAppSelector } from "../redux/Hooks";
 import { selectMatchDog } from "../redux/slices/matchDogSlice";
+import { selectMatchLocation } from "../redux/slices/matchLocationSlice";
 
 const StyledTypography = styled(Typography)(() => ({
   fontWeight: "bold",
@@ -24,8 +25,9 @@ const StyledTypography = styled(Typography)(() => ({
 export default function DogCard({ zipcode }: { zipcode: string[] }) {
   const [open, setOpen] = useState<boolean>(false);
 
-  const { aiGeneratedActivities, matchLocation } = useContext(DogContext);
+  const { aiGeneratedActivities } = useContext(DogContext);
   const { matchDog } = useAppSelector(selectMatchDog);
+  const { locationData } = useAppSelector(selectMatchLocation);
 
   const [generatedActivityByAI] = useGenerateActivities();
 
@@ -77,31 +79,31 @@ export default function DogCard({ zipcode }: { zipcode: string[] }) {
                 <StyledTypography>{matchDog[0].zip_code}</StyledTypography>
               </Grid>
             </Grid>
-            {matchLocation.length > 0 ? (
+            {locationData.length > 0 ? (
               <Grid container spacing={2} marginTop={"0.1rem"}>
                 <Grid item md={6} xs={12}>
                   <Typography component={"span"}>City: </Typography>
-                  <StyledTypography>{matchLocation[0].city}</StyledTypography>
+                  <StyledTypography>{locationData[0].city}</StyledTypography>
                 </Grid>
                 <Grid item md={6} xs={12}>
                   <Typography component={"span"}>County: </Typography>
-                  <StyledTypography>{matchLocation[0].county}</StyledTypography>
+                  <StyledTypography>{locationData[0].county}</StyledTypography>
                 </Grid>
                 <Grid item md={6} xs={12}>
                   <Typography component={"span"}>Latitude: </Typography>
                   <StyledTypography>
-                    {matchLocation[0].latitude}
+                    {locationData[0].latitude}
                   </StyledTypography>
                 </Grid>
                 <Grid item md={6} xs={12}>
                   <Typography component={"span"}>Longitude: </Typography>
                   <StyledTypography>
-                    {matchLocation[0].longitude}
+                    {locationData[0].longitude}
                   </StyledTypography>
                 </Grid>
                 <Grid item md={6} xs={12}>
                   <Typography component={"span"}>State: </Typography>
-                  <StyledTypography>{matchLocation[0].state}</StyledTypography>
+                  <StyledTypography>{locationData[0].state}</StyledTypography>
                 </Grid>
               </Grid>
             ) : null}
