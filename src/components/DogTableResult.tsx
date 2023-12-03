@@ -21,6 +21,7 @@ import SortIcon from "@mui/icons-material/Sort";
 import { useAppDispatch } from "../redux/Hooks";
 import { setFavoriteIDs } from "../redux/slices/favoriteDogsIdSlice";
 import { clearMatchDogData } from "../redux/slices/matchDogSlice";
+import { setAIGneratedActivities } from "../redux/slices/aiGeneratedActivitesSlice";
 
 interface Dog {
   id: string;
@@ -180,7 +181,6 @@ export default function DogTableResult({
 
   /**useContext hooks */
   const {
-    setAiGeneratedActivities,
     sortingStrategy,
     setSortingStrategy,
     initialPageLoadSort,
@@ -311,7 +311,7 @@ export default function DogTableResult({
   const matchMyFavDogs = () => {
     dispatch(setFavoriteIDs(selected));
     dispatch(clearMatchDogData());
-    setAiGeneratedActivities({});
+    dispatch(setAIGneratedActivities({}));
     navigate("/favoritedogs");
   };
 
