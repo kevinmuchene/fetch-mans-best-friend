@@ -1,17 +1,17 @@
 import { Typography, Container, Grid, Button, Alert } from "@mui/material";
 import DogCard from "./DogCard";
-import { useContext, useEffect, useState } from "react";
-import { DogContext } from "../context/DogContext";
+import { useEffect, useState } from "react";
 import DogAction from "../Actions/DogAction";
 import { useNavigate } from "react-router-dom";
-import { useAppSelector } from "../redux/Hooks";
+import { useAppDispatch, useAppSelector } from "../redux/Hooks";
 import { selectFavoriteIDs } from "../redux/slices/favoriteDogsIdSlice";
+import { selectMatchDog, setMatchDogData } from "../redux/slices/matchDogSlice";
 
 function FavDogsComponent() {
-  const { setMatchDogData, matchDogData } = useContext(DogContext);
   const navigate = useNavigate();
-
+  const dispatch = useAppDispatch();
   const favoriteIDs = useAppSelector(selectFavoriteIDs);
+  const matchDogData = useAppSelector(selectMatchDog);
 
   const [zipcode, setZipcode] = useState<string[]>([]);
 
@@ -30,7 +30,8 @@ function FavDogsComponent() {
 
           const dogsResponse = await DogAction.fetchDogs(matchId);
           zipCode.push(dogsResponse[0].zip_code);
-          setMatchDogData(dogsResponse);
+
+          dispatch(setMatchDogData(dogsResponse));
           setZipcode(zipCode);
         } catch (err) {
           console.log(err);
@@ -63,12 +64,12 @@ function FavDogsComponent() {
           </Grid>
         </Grid>
         <Grid item md={12}>
-          {matchDogData.length == 0 && (
+          {matchDogData.matchDog.length == 0 && (
             <Alert sx={{ marginTop: "1em" }} severity="error">
               Filter Again
             </Alert>
           )}
-          {matchDogData.length > 0 && <DogCard zipcode={zipcode} />}
+          {matchDogData.matchDog.length > 0 && <DogCard zipcode={zipcode} />}
         </Grid>
       </Grid>
     </Container>
