@@ -11,6 +11,7 @@ import SignIn from "./components/SigninCard";
 import SearchPage from "./components/SearchPage";
 import { Provider } from "react-redux";
 import { store } from "./redux/Store";
+import ErrorPage from "./components/ErrorPage/ErrorPage";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -19,6 +20,7 @@ const router = createBrowserRouter(
         <Route index element={<SignIn />} />
         <Route path="/dogs" element={<SearchPage />} />
         <Route path="/favoritedogs" element={<FavDogsComponent />} />
+        <Route path="*" element={<ErrorPage />} />
       </Route>
     </Route>
   )
