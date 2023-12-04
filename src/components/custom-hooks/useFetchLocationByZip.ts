@@ -17,7 +17,7 @@ export const useFetchLocationByZip = (zipsCode: string[]) => {
           console.log(error);
         });
     } else {
-      console.log("Zipcodes is empty or data is already present");
+      // console.log("Zipcodes is empty or data is already present");
     }
   }, [zipsCode]);
 };

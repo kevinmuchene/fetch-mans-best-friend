@@ -59,14 +59,16 @@ function FavDogsComponent() {
             </Grid>
 
             <Grid item>
-              <Button onClick={() => navigate("/dogs")}>Back</Button>
+              <Button onClick={() => navigate("/dogs")} variant="outlined">
+                Back
+              </Button>
             </Grid>
           </Grid>
         </Grid>
         <Grid item md={12}>
           {matchDogData.matchDog.length == 0 && (
-            <Alert sx={{ marginTop: "1em" }} severity="error">
-              Filter Again
+            <Alert sx={{ marginTop: "1em" }} variant="filled" severity="info">
+              Search and Filter Again to see your match
             </Alert>
           )}
           {matchDogData.matchDog.length > 0 && <DogCard zipcode={zipcode} />}
