@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Welcome to the Man's Best Friend Web Application! This application is a unique platform for dog enthusiasts to explore and find their favorite dogs. Built with modern technologies like React, TypeScript, Formik, Axios, and Jest, and integrated with APIs including Fetch API and OpenAI, this app offers a seamless and interactive experience.
+Welcome to the Man's Best Friend Web Application! This application is a unique platform for dog enthusiasts to explore and find their favorite dogs. Built with modern technologies like React, TypeScript, Formik, Axios, Redux and Jest, and integrated with APIs including Fetch API and OpenAI, this app offers a seamless and interactive experience. The routes are protected, user must login to continue. (Use any name and email "with correct format" ) to login)
 
 ## Features
 
@@ -21,7 +21,8 @@ Welcome to the Man's Best Friend Web Application! This application is a unique p
 
 Frontend: React, TypeScript
 Form Handling: Formik, Yup
-HTTP Requests: Axios, Fetch API
+State Management: Redux
+HTTP Requests: Axios
 AI Integration: OpenAI API
 Testing: Jest
 
