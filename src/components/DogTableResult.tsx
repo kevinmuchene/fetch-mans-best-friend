@@ -251,7 +251,7 @@ export default function DogTableResult({
     property: keyof Dog
   ) => {
     if (property !== "breed") return;
-    console.log(event);
+    event.preventDefault();
     if (initialRender) {
       initialPageLoadSort === "asc"
         ? dispatch(setInitialPageLoadSort("desc"))
