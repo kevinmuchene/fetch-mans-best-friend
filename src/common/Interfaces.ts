@@ -1,6 +1,3 @@
-export interface DogZipCode {
-  zipcode: string[];
-}
 export interface Dog {
   img: string;
   name: string;
