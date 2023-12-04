@@ -15,7 +15,7 @@ export default function Header() {
     authService
       .signout()
       .then(() => {
-        // console.log(res + "successfully signed out user");
+        localStorage.setItem("authorized", "");
       })
       .catch((err) => {
         console.log("Error in signing out user" + err);

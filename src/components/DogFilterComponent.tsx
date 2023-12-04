@@ -1,13 +1,28 @@
-import { Dispatch, SetStateAction, useContext, useEffect } from "react";
-import { TextField, Button, Box, Grid, Typography, Paper } from "@mui/material";
+import { Dispatch, SetStateAction, useEffect } from "react";
+import {
+  TextField,
+  Button,
+  Box,
+  Grid,
+  Typography,
+  Paper,
+  Alert,
+} from "@mui/material";
 import { useFormik } from "formik";
 import SelectBreedComponent from "./MultiSelectComponent";
 import dogAction from "../Actions/DogAction";
 import * as Yup from "yup";
 import { CustomErrorDiv, ageValidationSchema } from "../common/YupValidation";
 import { createUrl, processZipCodes } from "../common/HelperFunctions";
-import { DogContext } from "../context/DogContext";
 import { TypeIntialValues } from "../common/Interfaces";
+import { useAppDispatch, useAppSelector } from "../redux/Hooks";
+import { selectBreeds, setBreeds } from "../redux/slices/breedDataSlice";
+import {
+  selectFilterValues,
+  setFilterValuesData,
+} from "../redux/slices/filterValuesSlice";
+import { selectSortingStrategy } from "../redux/slices/sortingStrategySlice";
+import DogAction from "../Actions/DogAction";
 
 interface apiResultObject {
   next: string;
@@ -32,8 +47,31 @@ let initialValues: TypeIntialValues = {
 };
 
 function DogFilterComponent({ setApiResultObject }: DogFilterComponentProps) {
-  const { sortingStrategy, filterValues, setFilterValues } =
-    useContext(DogContext);
+  const { breed } = useAppSelector(selectBreeds);
+  const disptach = useAppDispatch();
+  const { filterValues } = useAppSelector(selectFilterValues);
+  const { sortingStrategy } = useAppSelector(selectSortingStrategy);
+
+  useEffect(() => {
+    const fetchDogBreeds = async () => {
+      try {
+        const res = await DogAction.fetchBreed();
+        disptach(setBreeds(res));
+      } catch (error) {
+        fetchBreedsError();
+        console.log(error);
+      }
+    };
+    fetchDogBreeds();
+  }, []);
+
+  const fetchBreedsError = () => {
+    return (
+      <Alert severity="info" variant="filled">
+        Error in fetch breeds data! Try to reload the page
+      </Alert>
+    );
+  };
 
   const formik = useFormik({
     initialValues: initialValues,
@@ -55,7 +93,7 @@ function DogFilterComponent({ setApiResultObject }: DogFilterComponentProps) {
         validZipCodes,
         sortingStrategy
       );
-      setFilterValues(filterValues);
+      disptach(setFilterValuesData(filterValues));
       handleSubmit(url);
 
       resetForm();
@@ -107,7 +145,7 @@ function DogFilterComponent({ setApiResultObject }: DogFilterComponentProps) {
               setSelectedItems={(field: string, value: any) =>
                 formik.setFieldValue(field, value)
               }
-              // items={breedsData}
+              dropDownItems={breed}
               label={"Breed"}
             />
           </Grid>

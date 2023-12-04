@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { alpha } from "@mui/material/styles";
 import { Alert, Avatar, Box, Button } from "@mui/material";
 import Table from "@mui/material/Table";
@@ -15,9 +15,17 @@ import Paper from "@mui/material/Paper";
 import Checkbox from "@mui/material/Checkbox";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import { useNavigate } from "react-router-dom";
-import { DogContext } from "../context/DogContext";
 import DogAction from "../Actions/DogAction";
 import SortIcon from "@mui/icons-material/Sort";
+import { useAppDispatch, useAppSelector } from "../redux/Hooks";
+import { setFavoriteIDs } from "../redux/slices/favoriteDogsIdSlice";
+import { clearMatchDogData } from "../redux/slices/matchDogSlice";
+import { setAIGneratedActivities } from "../redux/slices/aiGeneratedActivitesSlice";
+import {
+  selectSortingStrategy,
+  setInitialPageLoadSort,
+  setSortingStrategy,
+} from "../redux/slices/sortingStrategySlice";
 
 interface Dog {
   id: string;
@@ -173,16 +181,11 @@ export default function DogTableResult({
   const [tablePaginationCount, setTablePaginationCount] = useState<number>(0);
   const [initialRender, setInitialRender] = useState<boolean>(true);
 
-  /**useContext hooks */
-  const {
-    setFavoriteDogsId,
-    setAiGeneratedActivities,
-    setMatchDogData,
-    sortingStrategy,
-    setSortingStrategy,
-    initialPageLoadSort,
-    setInitialPageLoadSort,
-  } = useContext(DogContext);
+  const dispatch = useAppDispatch();
+
+  const { sortingStrategy, initialPageLoadSort } = useAppSelector(
+    selectSortingStrategy
+  );
 
   /**router dom hooks */
   const navigate = useNavigate();
@@ -248,18 +251,18 @@ export default function DogTableResult({
     property: keyof Dog
   ) => {
     if (property !== "breed") return;
-    console.log(event);
+    event.preventDefault();
     if (initialRender) {
       initialPageLoadSort === "asc"
-        ? setInitialPageLoadSort("desc")
-        : setInitialPageLoadSort("asc");
+        ? dispatch(setInitialPageLoadSort("desc"))
+        : dispatch(setInitialPageLoadSort("asc"));
 
       return;
     }
     if (sortingStrategy === "asc") {
-      setSortingStrategy("desc");
+      dispatch(setSortingStrategy("desc"));
     } else {
-      setSortingStrategy("asc");
+      dispatch(setSortingStrategy("asc"));
     }
   };
 
@@ -305,12 +308,10 @@ export default function DogTableResult({
 
   const isSelected = (id: string) => selected.indexOf(id) !== -1;
 
-  // console.log(selected);
-
   const matchMyFavDogs = () => {
-    setFavoriteDogsId(selected);
-    setMatchDogData([]);
-    setAiGeneratedActivities({});
+    dispatch(setFavoriteIDs(selected));
+    dispatch(clearMatchDogData());
+    dispatch(setAIGneratedActivities({}));
     navigate("/favoritedogs");
   };
 

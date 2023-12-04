@@ -1,23 +1,26 @@
 import { Typography, Container, Grid, Button, Alert } from "@mui/material";
 import DogCard from "./DogCard";
-import { useContext, useEffect, useState } from "react";
-import { DogContext } from "../context/DogContext";
+import { useEffect, useState } from "react";
 import DogAction from "../Actions/DogAction";
 import { useNavigate } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../redux/Hooks";
+import { selectFavoriteIDs } from "../redux/slices/favoriteDogsIdSlice";
+import { selectMatchDog, setMatchDogData } from "../redux/slices/matchDogSlice";
 
 function FavDogsComponent() {
-  const { favoriteDogsId, setMatchDogData, matchDogData } =
-    useContext(DogContext);
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const favoriteIDs = useAppSelector(selectFavoriteIDs);
+  const matchDogData = useAppSelector(selectMatchDog);
 
   const [zipcode, setZipcode] = useState<string[]>([]);
 
   useEffect(() => {
-    if (favoriteDogsId.length > 0) {
+    if (favoriteIDs.favoriteDogsId.length > 0) {
       const fetchFavoriteMatchDog = async () => {
         try {
           const matchResponse = await DogAction.fetchFavoriteMatch(
-            favoriteDogsId.slice(0, 100)
+            favoriteIDs.favoriteDogsId.slice(0, 100)
           );
 
           const matchId = [];
@@ -27,7 +30,8 @@ function FavDogsComponent() {
 
           const dogsResponse = await DogAction.fetchDogs(matchId);
           zipCode.push(dogsResponse[0].zip_code);
-          setMatchDogData(dogsResponse);
+
+          dispatch(setMatchDogData(dogsResponse));
           setZipcode(zipCode);
         } catch (err) {
           console.log(err);
@@ -35,7 +39,7 @@ function FavDogsComponent() {
       };
       fetchFavoriteMatchDog();
     }
-  }, [favoriteDogsId]);
+  }, [favoriteIDs]);
 
   return (
     <Container>
@@ -55,17 +59,19 @@ function FavDogsComponent() {
             </Grid>
 
             <Grid item>
-              <Button onClick={() => navigate("/dogs")}>Back</Button>
+              <Button onClick={() => navigate("/dogs")} variant="outlined">
+                Back
+              </Button>
             </Grid>
           </Grid>
         </Grid>
         <Grid item md={12}>
-          {matchDogData.length == 0 && (
-            <Alert sx={{ marginTop: "1em" }} severity="error">
-              Filter Again
+          {matchDogData.matchDog.length == 0 && (
+            <Alert sx={{ marginTop: "1em" }} variant="filled" severity="info">
+              Search and Filter Again to see your match
             </Alert>
           )}
-          {matchDogData.length > 0 && <DogCard zipcode={zipcode} />}
+          {matchDogData.matchDog.length > 0 && <DogCard zipcode={zipcode} />}
         </Grid>
       </Grid>
     </Container>

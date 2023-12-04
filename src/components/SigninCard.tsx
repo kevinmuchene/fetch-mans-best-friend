@@ -4,7 +4,7 @@ import Grid from "@mui/material/Grid";
 import { Box, Typography } from "@mui/material";
 import Container from "@mui/material/Container";
 import { useFormik } from "formik";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import authAction from "../Actions/AuthAction";
 import {
   CustomErrorDiv,
@@ -14,6 +14,8 @@ import * as Yup from "yup";
 
 const SignIn = function SiginCard() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/dogs";
 
   const formik = useFormik({
     initialValues: {
@@ -24,13 +26,16 @@ const SignIn = function SiginCard() {
     onSubmit: (values, { resetForm }) => {
       authAction
         .signin(values)
-        .then(() => {
-          navigate("/dogs");
+        .then((res) => {
+          localStorage.setItem("authorized", res);
+          navigate(from);
         })
         .catch((err) => {
           console.log("Error in signing in user" + err);
+        })
+        .finally(() => {
+          resetForm();
         });
-      resetForm();
     },
   });
 
