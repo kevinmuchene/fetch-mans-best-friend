@@ -10,7 +10,6 @@ import {
 } from "@mui/material";
 import { useFormik } from "formik";
 import SelectBreedComponent from "./MultiSelectComponent";
-import dogAction from "../Actions/DogAction";
 import * as Yup from "yup";
 import { CustomErrorDiv, ageValidationSchema } from "../common/YupValidation";
 import { createUrl, processZipCodes } from "../common/HelperFunctions";
@@ -22,7 +21,8 @@ import {
   setFilterValuesData,
 } from "../redux/slices/filterValuesSlice";
 import { selectSortingStrategy } from "../redux/slices/sortingStrategySlice";
-import DogAction from "../Actions/DogAction";
+import { useFetchBreeds } from "./custom-hooks/useFetchBreeds";
+import { useSearchDogsMutation } from "./custom-hooks/userSearchDogsMutation";
 
 interface apiResultObject {
   next: string;
@@ -48,30 +48,37 @@ let initialValues: TypeIntialValues = {
 
 function DogFilterComponent({ setApiResultObject }: DogFilterComponentProps) {
   const { breed } = useAppSelector(selectBreeds);
-  const disptach = useAppDispatch();
+  const dispatch = useAppDispatch();
   const { filterValues } = useAppSelector(selectFilterValues);
   const { sortingStrategy } = useAppSelector(selectSortingStrategy);
 
-  useEffect(() => {
-    const fetchDogBreeds = async () => {
-      try {
-        const res = await DogAction.fetchBreed();
-        disptach(setBreeds(res));
-      } catch (error) {
-        fetchBreedsError();
-        console.log(error);
-      }
-    };
-    fetchDogBreeds();
-  }, []);
+  const {
+    data: fetchBreedsData,
+    isError: fetchBreedsError,
+    isSuccess: fetchBreedsSuccess,
+  } = useFetchBreeds();
 
-  const fetchBreedsError = () => {
+  const {
+    data: searchDogsData,
+    isError: searchDogsError,
+    isSuccess: searchDogsSuccess,
+    mutate: mutateSearchDogs,
+    reset: resetSearchDogs,
+  } = useSearchDogsMutation();
+
+  useEffect(() => {
+    if (fetchBreedsSuccess) {
+      dispatch(setBreeds(fetchBreedsData));
+    }
+  }, [fetchBreedsSuccess, fetchBreedsData]);
+
+  if (fetchBreedsError) {
     return (
       <Alert severity="info" variant="filled">
         Error in fetch breeds data! Try to reload the page
       </Alert>
     );
-  };
+  }
 
   const formik = useFormik({
     initialValues: initialValues,
@@ -93,22 +100,14 @@ function DogFilterComponent({ setApiResultObject }: DogFilterComponentProps) {
         validZipCodes,
         sortingStrategy
       );
-      disptach(setFilterValuesData(filterValues));
+      dispatch(setFilterValuesData(filterValues));
       handleSubmit(url);
-
       resetForm();
     },
   });
 
   const handleSubmit = (url: string) => {
-    dogAction
-      .searchDogs(url)
-      .then((res) => {
-        setApiResultObject(res);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    mutateSearchDogs(url);
   };
 
   useEffect(() => {
@@ -124,6 +123,21 @@ function DogFilterComponent({ setApiResultObject }: DogFilterComponentProps) {
       handleSubmit(url);
     }
   }, [sortingStrategy]);
+
+  useEffect(() => {
+    if (searchDogsSuccess) {
+      setApiResultObject(searchDogsData);
+      resetSearchDogs();
+    }
+  }, [searchDogsSuccess]);
+
+  if (searchDogsError) {
+    return (
+      <Alert severity="info" variant="filled">
+        Error in filtering dog's data. Try again.
+      </Alert>
+    );
+  }
 
   return (
     <Paper sx={{ width: "100%", mb: 2 }}>
