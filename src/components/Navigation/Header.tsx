@@ -6,16 +6,20 @@ import Button from "@mui/material/Button";
 import { Hidden } from "@mui/material";
 import authService from "../../services/AuthService";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useAppDispatch } from "../../redux/Hooks";
+import { clearFilterValuesData } from "../../redux/slices/filterValuesSlice";
 
 export default function Header() {
   const navigate = useNavigate();
   let { pathname } = useLocation();
+  const dispatch = useAppDispatch();
 
   const signOutUser = () => {
     authService
       .signout()
       .then(() => {
         localStorage.setItem("authorized", "");
+        dispatch(clearFilterValuesData());
       })
       .catch((err) => {
         console.log("Error in signing out user" + err);
