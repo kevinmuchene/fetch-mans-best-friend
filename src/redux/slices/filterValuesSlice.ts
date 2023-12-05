@@ -26,10 +26,19 @@ export const filterValuesSlice = createSlice({
     setFilterValuesData: (state, action: PayloadAction<FilterValues>) => {
       state.filterValues = action.payload;
     },
+    clearFilterValuesData: (state) => {
+      state.filterValues = {
+        breeds: [],
+        ageMin: "",
+        ageMax: "",
+        validZipCodes: [],
+      };
+    },
   },
 });
 
-export const { setFilterValuesData } = filterValuesSlice.actions;
+export const { setFilterValuesData, clearFilterValuesData } =
+  filterValuesSlice.actions;
 
 export const selectFilterValues = (state: RootState) => state.filterValueData;
 
