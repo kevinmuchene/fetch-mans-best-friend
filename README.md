@@ -4,6 +4,8 @@
 
 Welcome to the Man's Best Friend Web Application! This application is a unique platform for dog enthusiasts to explore and find their favorite dogs. Built with modern technologies like React, TypeScript, Formik, Axios, Redux and Jest, and integrated with APIs including Fetch API and OpenAI, this app offers a seamless and interactive experience. The routes are protected, user must login to continue. (Use any name and email "with correct format" ) to login)
 
+Live project: https://main.dpink7pqlismz.amplifyapp.com/
+
 ## Features
 
 1. User Authentication: Users start by entering their name and email on a login screen, which uses Fetch API to authenticate.
