@@ -4,7 +4,7 @@ import DogAction from "../../Actions/DogAction";
 
 import {
   setNextUrl,
-  setPaginationCount,
+  setPrevUrl,
   setTablesData,
 } from "../../redux/slices/tableDataPropsSlice";
 
@@ -17,12 +17,12 @@ export const useFetchDogData = () => {
       const dogDetailsResponse = await DogAction.fetchDogs(
         filterResponseObject.resultIds
       );
-
       dispatch(setTablesData(dogDetailsResponse));
 
-      dispatch(setPaginationCount(filterResponseObject.total));
-
       dispatch(setNextUrl(filterResponseObject.next));
+      dispatch(
+        setPrevUrl(filterResponseObject.prev ? filterResponseObject.prev : "")
+      );
     } else {
       console.log("Nothing to do");
     }
