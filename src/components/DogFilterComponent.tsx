@@ -23,17 +23,8 @@ import {
 } from "../redux/slices/filterValuesSlice";
 import { selectSortingStrategy } from "../redux/slices/sortingStrategySlice";
 import DogAction from "../Actions/DogAction";
+import { setFilterResponseObject } from "../redux/slices/filterResponseObjectSlice";
 
-interface apiResultObject {
-  next: string;
-  prev: string;
-  resultIds: string[];
-  total: number;
-}
-
-interface DogFilterComponentProps {
-  setApiResultObject: Dispatch<SetStateAction<apiResultObject>>;
-}
 const isObjectEmpty = (obj: {}) =>
   Object.values(obj).every(
     (value) => (Array.isArray(value) && value.length === 0) || value === ""
@@ -46,7 +37,7 @@ let initialValues: TypeIntialValues = {
   ageMax: "",
 };
 
-function DogFilterComponent({ setApiResultObject }: DogFilterComponentProps) {
+function DogFilterComponent() {
   const { breed } = useAppSelector(selectBreeds);
   const disptach = useAppDispatch();
   const { filterValues } = useAppSelector(selectFilterValues);
@@ -95,7 +86,6 @@ function DogFilterComponent({ setApiResultObject }: DogFilterComponentProps) {
       );
       disptach(setFilterValuesData(filterValues));
       handleSubmit(url);
-
       resetForm();
     },
   });
@@ -104,7 +94,7 @@ function DogFilterComponent({ setApiResultObject }: DogFilterComponentProps) {
     dogAction
       .searchDogs(url)
       .then((res) => {
-        setApiResultObject(res);
+        disptach(setFilterResponseObject(res));
       })
       .catch((err) => {
         console.log(err);
