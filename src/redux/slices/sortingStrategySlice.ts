@@ -3,12 +3,10 @@ import { RootState } from "../Store";
 
 interface InitialState {
   sortingStrategy: string;
-  initialPageLoadSort: string;
 }
 
 const initialState: InitialState = {
   sortingStrategy: "asc",
-  initialPageLoadSort: "asc",
 };
 
 export const sortingStrategySlice = createSlice({
@@ -18,14 +16,10 @@ export const sortingStrategySlice = createSlice({
     setSortingStrategy: (state, action: PayloadAction<string>) => {
       state.sortingStrategy = action.payload;
     },
-    setInitialPageLoadSort: (state, action: PayloadAction<string>) => {
-      state.initialPageLoadSort = action.payload;
-    },
   },
 });
 
-export const { setSortingStrategy, setInitialPageLoadSort } =
-  sortingStrategySlice.actions;
+export const { setSortingStrategy } = sortingStrategySlice.actions;
 
 export const selectSortingStrategy = (state: RootState) =>
   state.sortingStrategy;

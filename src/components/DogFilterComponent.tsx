@@ -1,34 +1,20 @@
 import { useEffect } from "react";
-import {
-  TextField,
-  Button,
-  Box,
-  Grid,
-  Typography,
-  Paper,
-  Alert,
-} from "@mui/material";
+import { TextField, Button, Box, Grid, Typography, Paper } from "@mui/material";
 import { useFormik } from "formik";
 import SelectBreedComponent from "./MultiSelectComponent";
-import dogAction from "../Actions/DogAction";
 import * as Yup from "yup";
 import { CustomErrorDiv, ageValidationSchema } from "../common/YupValidation";
 import { createUrl, processZipCodes } from "../common/HelperFunctions";
 import { TypeIntialValues } from "../common/Interfaces";
 import { useAppDispatch, useAppSelector } from "../redux/Hooks";
-import { selectBreeds, setBreeds } from "../redux/slices/breedDataSlice";
+import { selectBreeds } from "../redux/slices/breedDataSlice";
 import {
   selectFilterValues,
   setFilterValuesData,
 } from "../redux/slices/filterValuesSlice";
 import { selectSortingStrategy } from "../redux/slices/sortingStrategySlice";
-import DogAction from "../Actions/DogAction";
-import { setFilterResponseObject } from "../redux/slices/filterResponseObjectSlice";
-
-const isObjectEmpty = (obj: {}) =>
-  Object.values(obj).every(
-    (value) => (Array.isArray(value) && value.length === 0) || value === ""
-  );
+import { useFetchBreeds } from "./custom-hooks/useFetchBreeds";
+import { useSearchDogs } from "./custom-hooks/useSearchDogs";
 
 let initialValues: TypeIntialValues = {
   breeds: [],
@@ -43,26 +29,12 @@ function DogFilterComponent() {
   const { filterValues } = useAppSelector(selectFilterValues);
   const { sortingStrategy } = useAppSelector(selectSortingStrategy);
 
+  const { fetchDogBreeds } = useFetchBreeds();
+  const { searchDogs } = useSearchDogs();
+
   useEffect(() => {
-    const fetchDogBreeds = async () => {
-      try {
-        const res = await DogAction.fetchBreed();
-        disptach(setBreeds(res));
-      } catch (error) {
-        fetchBreedsError();
-        console.log(error);
-      }
-    };
     fetchDogBreeds();
   }, []);
-
-  const fetchBreedsError = () => {
-    return (
-      <Alert severity="info" variant="filled">
-        Error in fetch breeds data! Try to reload the page
-      </Alert>
-    );
-  };
 
   const formik = useFormik({
     initialValues: initialValues,
@@ -91,28 +63,19 @@ function DogFilterComponent() {
   });
 
   const handleSubmit = (url: string) => {
-    dogAction
-      .searchDogs(url)
-      .then((res) => {
-        disptach(setFilterResponseObject(res));
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    searchDogs(url);
   };
 
   useEffect(() => {
-    if (!isObjectEmpty(filterValues)) {
-      let url = createUrl(
-        filterValues.breeds,
-        filterValues.ageMin,
-        filterValues.ageMax,
-        filterValues.validZipCodes,
-        sortingStrategy
-      );
+    let url = createUrl(
+      filterValues.breeds,
+      filterValues.ageMin,
+      filterValues.ageMax,
+      filterValues.validZipCodes,
+      sortingStrategy
+    );
 
-      handleSubmit(url);
-    }
+    handleSubmit(url);
   }, [sortingStrategy]);
 
   return (

@@ -1,54 +1,22 @@
 import { Typography, Container, Grid, Button, Alert } from "@mui/material";
 import DogCard from "./DogCard";
-import { useEffect, useState } from "react";
-import DogAction from "../Actions/DogAction";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../redux/Hooks";
-import {
-  clearFavoriteIDs,
-  selectFavoriteIDs,
-} from "../redux/slices/favoriteDogsIdSlice";
+import { clearFavoriteIDs } from "../redux/slices/favoriteDogsIdSlice";
 import {
   clearMatchDogData,
   selectMatchDog,
-  setMatchDogData,
 } from "../redux/slices/matchDogSlice";
 import { setAIGneratedActivities } from "../redux/slices/aiGeneratedActivitesSlice";
 import { setMatchLocationData } from "../redux/slices/matchLocationSlice";
+import { useMatchDogData } from "./custom-hooks/useMatchDogData";
 
 function FavDogsComponent() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const favoriteIDs = useAppSelector(selectFavoriteIDs);
   const matchDogData = useAppSelector(selectMatchDog);
 
-  const [zipcode, setZipcode] = useState<string[]>([]);
-
-  useEffect(() => {
-    if (favoriteIDs.favoriteDogsId.length > 0) {
-      const fetchFavoriteMatchDog = async () => {
-        try {
-          const matchResponse = await DogAction.fetchFavoriteMatch(
-            favoriteIDs.favoriteDogsId.slice(0, 100)
-          );
-
-          const matchId = [];
-          const zipCode = [];
-
-          matchId.push(matchResponse.match);
-
-          const dogsResponse = await DogAction.fetchDogs(matchId);
-          zipCode.push(dogsResponse[0].zip_code);
-
-          dispatch(setMatchDogData(dogsResponse));
-          setZipcode(zipCode);
-        } catch (err) {
-          console.log(err);
-        }
-      };
-      fetchFavoriteMatchDog();
-    }
-  }, [favoriteIDs]);
+  const { zipcode } = useMatchDogData();
 
   const handleBackButtonActivities = () => {
     dispatch(clearMatchDogData());

@@ -20,16 +20,14 @@ import { useAppDispatch, useAppSelector } from "../redux/Hooks";
 import { setFavoriteIDs } from "../redux/slices/favoriteDogsIdSlice";
 import {
   selectSortingStrategy,
-  setInitialPageLoadSort,
   setSortingStrategy,
 } from "../redux/slices/sortingStrategySlice";
 import { selectFilterResponseObject } from "../redux/slices/filterResponseObjectSlice";
-import { isObjectEmpty } from "../common/HelperFunctions";
 import { useFetchDogData } from "./custom-hooks/useFetchDogData";
 import { selectTabelDataProps } from "../redux/slices/tableDataPropsSlice";
-import { useFetchInitialMountDogData } from "./custom-hooks/useFechInitialMountDogData";
 import { useFetchPrevData } from "./custom-hooks/useFetchPrevData";
 import { useFetchNextData } from "./custom-hooks/useFetchNextData";
+import { selectPageState, setPage } from "../redux/slices/tableStateSlice";
 
 interface Dog {
   id: string;
@@ -162,24 +160,16 @@ export default function DogTableResult() {
   /**useState hooks */
 
   const [selected, setSelected] = useState<string[]>([]);
-  const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(20);
-  // const [isLoading, setIsLoading] = useState(false);
-  // const [error, setError] = useState(null);
 
   const dispatch = useAppDispatch();
 
-  const { sortingStrategy, initialPageLoadSort } = useAppSelector(
-    selectSortingStrategy
-  );
-
-  const { nextUrl, prevUrl, tablesData, tablePaginationCount } =
-    useAppSelector(selectTabelDataProps);
+  const { sortingStrategy } = useAppSelector(selectSortingStrategy);
+  const { page } = useAppSelector(selectPageState);
+  const { nextUrl, prevUrl, tablesData } = useAppSelector(selectTabelDataProps);
 
   const { filterResponseObject } = useAppSelector(selectFilterResponseObject);
-
   const { fetchDogData } = useFetchDogData();
-  const { onInitialMount } = useFetchInitialMountDogData();
   const { fetchPrevData } = useFetchPrevData();
   const { fetchNextData } = useFetchNextData();
 
@@ -187,13 +177,16 @@ export default function DogTableResult() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (isObjectEmpty(filterResponseObject)) {
-      onInitialMount();
+    fetchDogData();
+  }, [filterResponseObject]);
+
+  function sortStrategy() {
+    if (sortingStrategy === "asc") {
+      dispatch(setSortingStrategy("desc"));
     } else {
-      setPage(0);
-      fetchDogData();
+      dispatch(setSortingStrategy("asc"));
     }
-  }, [filterResponseObject, initialPageLoadSort]);
+  }
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -201,18 +194,7 @@ export default function DogTableResult() {
   ) => {
     if (property !== "breed") return;
     event.preventDefault();
-    if (isObjectEmpty(filterResponseObject)) {
-      initialPageLoadSort === "asc"
-        ? dispatch(setInitialPageLoadSort("desc"))
-        : dispatch(setInitialPageLoadSort("asc"));
-
-      return;
-    }
-    if (sortingStrategy === "asc") {
-      dispatch(setSortingStrategy("desc"));
-    } else {
-      dispatch(setSortingStrategy("asc"));
-    }
+    sortStrategy();
   };
 
   const handleClick = (id: string) => {
@@ -235,7 +217,7 @@ export default function DogTableResult() {
   };
 
   const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage);
+    dispatch(setPage(newPage));
     console.log(event);
 
     if (newPage > page && nextUrl) {
@@ -262,8 +244,6 @@ export default function DogTableResult() {
     navigate("/favoritedogs");
   };
 
-  // console.log(tablesData);
-  // debugger;
   return (
     <>
       <Box sx={{ width: "100%", mt: 4 }}>
@@ -341,15 +321,14 @@ export default function DogTableResult() {
           <TablePagination
             rowsPerPageOptions={[20]}
             component="div"
-            count={tablePaginationCount}
+            count={filterResponseObject.total}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
           />
 
-          {/* {isLoading && <Alert severity="info">Loading Next Data</Alert>}
-          {error && <Alert severity="info">Error Loading Next Data</Alert>} */}
+          {/* {isLoading && <Alert severity="info">Loading Data</Alert>} */}
         </Paper>
       </Box>
     </>
