@@ -1,4 +1,3 @@
-import { useState } from "react";
 import DogAction from "../../Actions/DogAction";
 import { useAppDispatch } from "../../redux/Hooks";
 import { setBreeds } from "../../redux/slices/breedDataSlice";
