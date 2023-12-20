@@ -16,10 +16,13 @@ export const favoriteDogsIdSlice = createSlice({
     setFavoriteIDs: (state, action: PayloadAction<string[]>) => {
       state.favoriteDogsId.push(...action.payload);
     },
+    clearFavoriteIDs: (state) => {
+      state.favoriteDogsId = [];
+    },
   },
 });
 
-export const { setFavoriteIDs } = favoriteDogsIdSlice.actions;
+export const { setFavoriteIDs, clearFavoriteIDs } = favoriteDogsIdSlice.actions;
 
 export const selectFavoriteIDs = (state: RootState) => state.favoriteDogsId;
 

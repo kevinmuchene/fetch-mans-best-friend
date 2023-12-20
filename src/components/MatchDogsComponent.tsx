@@ -4,8 +4,17 @@ import { useEffect, useState } from "react";
 import DogAction from "../Actions/DogAction";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../redux/Hooks";
-import { selectFavoriteIDs } from "../redux/slices/favoriteDogsIdSlice";
-import { selectMatchDog, setMatchDogData } from "../redux/slices/matchDogSlice";
+import {
+  clearFavoriteIDs,
+  selectFavoriteIDs,
+} from "../redux/slices/favoriteDogsIdSlice";
+import {
+  clearMatchDogData,
+  selectMatchDog,
+  setMatchDogData,
+} from "../redux/slices/matchDogSlice";
+import { setAIGneratedActivities } from "../redux/slices/aiGeneratedActivitesSlice";
+import { setMatchLocationData } from "../redux/slices/matchLocationSlice";
 
 function FavDogsComponent() {
   const navigate = useNavigate();
@@ -41,6 +50,14 @@ function FavDogsComponent() {
     }
   }, [favoriteIDs]);
 
+  const handleBackButtonActivities = () => {
+    dispatch(clearMatchDogData());
+    dispatch(setAIGneratedActivities({}));
+    dispatch(setMatchLocationData([]));
+    dispatch(clearFavoriteIDs());
+    navigate("/dogs");
+  };
+
   return (
     <Container>
       <Grid container justifyContent="center" alignItems="center">
@@ -59,7 +76,7 @@ function FavDogsComponent() {
             </Grid>
 
             <Grid item>
-              <Button onClick={() => navigate("/dogs")} variant="outlined">
+              <Button onClick={handleBackButtonActivities} variant="outlined">
                 Back
               </Button>
             </Grid>

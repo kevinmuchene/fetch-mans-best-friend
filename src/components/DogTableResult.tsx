@@ -15,17 +15,21 @@ import Paper from "@mui/material/Paper";
 import Checkbox from "@mui/material/Checkbox";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import { useNavigate } from "react-router-dom";
-import DogAction from "../Actions/DogAction";
 import SortIcon from "@mui/icons-material/Sort";
 import { useAppDispatch, useAppSelector } from "../redux/Hooks";
 import { setFavoriteIDs } from "../redux/slices/favoriteDogsIdSlice";
-import { clearMatchDogData } from "../redux/slices/matchDogSlice";
-import { setAIGneratedActivities } from "../redux/slices/aiGeneratedActivitesSlice";
 import {
   selectSortingStrategy,
   setInitialPageLoadSort,
   setSortingStrategy,
 } from "../redux/slices/sortingStrategySlice";
+import { selectFilterResponseObject } from "../redux/slices/filterResponseObjectSlice";
+import { isObjectEmpty } from "../common/HelperFunctions";
+import { useFetchDogData } from "./custom-hooks/useFetchDogData";
+import { selectTabelDataProps } from "../redux/slices/tableDataPropsSlice";
+import { useFetchInitialMountDogData } from "./custom-hooks/useFechInitialMountDogData";
+import { useFetchPrevData } from "./custom-hooks/useFetchPrevData";
+import { useFetchNextData } from "./custom-hooks/useFetchNextData";
 
 interface Dog {
   id: string;
@@ -36,17 +40,6 @@ interface Dog {
   breed: string;
   favorite: string;
 }
-interface apiResultObject {
-  next: string;
-  prev: string;
-  resultIds: string[];
-  total: number;
-}
-
-interface ResultObjectComponentProps {
-  apiResultObject: apiResultObject;
-}
-const isObjectEmpty = (obj: {}) => Object.keys(obj).length === 0;
 
 interface HeadCell {
   disablePadding: boolean;
@@ -165,21 +158,14 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   );
 }
 
-export default function DogTableResult({
-  apiResultObject,
-}: ResultObjectComponentProps) {
+export default function DogTableResult() {
   /**useState hooks */
 
   const [selected, setSelected] = useState<string[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(20);
-  const [nextUrl, setNextUrl] = useState<string | null>("");
-  const [prevUrl, setPrevUrl] = useState<string | null>("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [tablesData, setTablesData] = useState<Dog[]>([]);
-  const [tablePaginationCount, setTablePaginationCount] = useState<number>(0);
-  const [initialRender, setInitialRender] = useState<boolean>(true);
 
   const dispatch = useAppDispatch();
 
@@ -187,64 +173,27 @@ export default function DogTableResult({
     selectSortingStrategy
   );
 
+  const { nextUrl, prevUrl, tablesData, tablePaginationCount } =
+    useAppSelector(selectTabelDataProps);
+
+  const { filterResponseObject } = useAppSelector(selectFilterResponseObject);
+
+  const { fetchDogData } = useFetchDogData();
+  const { onInitialMount } = useFetchInitialMountDogData();
+  const { fetchPrevData } = useFetchPrevData();
+  const { fetchNextData } = useFetchNextData();
+
   /**router dom hooks */
   const navigate = useNavigate();
-  // console.log(tablesData);
+
   useEffect(() => {
-    const fetchDogData = async () => {
-      if (initialRender && isObjectEmpty(apiResultObject)) {
-        try {
-          const allDogsResponse = await DogAction.fetchAllDogs(
-            initialPageLoadSort
-          );
-          // console.log(allDogsResponse);
-          setTablePaginationCount(allDogsResponse.total);
-          setNextUrl(allDogsResponse.next);
-
-          const dogDetailsResponse = await DogAction.fetchDogs(
-            allDogsResponse.resultIds
-          );
-          setTablesData(dogDetailsResponse);
-          // console.log(dogDetailsResponse);
-        } catch (error) {
-          console.error("Error fetching dog data:", error);
-        }
-      }
-
-      if (apiResultObject?.resultIds?.length) {
-        setPage(0);
-        setInitialRender(false);
-        const dogDetailsResponse = await DogAction.fetchDogs(
-          apiResultObject.resultIds
-        );
-
-        setTablesData(dogDetailsResponse);
-        setTablePaginationCount(apiResultObject.total);
-        setNextUrl(apiResultObject.next);
-      }
-    };
-
-    fetchDogData();
-  }, [apiResultObject, initialPageLoadSort]);
-
-  const fetchNextData = async (url: string) => {
-    try {
-      setIsLoading(true);
-      const nextPageResponse = await DogAction.fetchNextPageData(url);
-
-      const newDogsData = await DogAction.fetchDogs(nextPageResponse.resultIds);
-
-      setTablesData(newDogsData);
-
-      setNextUrl(nextPageResponse.next);
-      setPrevUrl(nextPageResponse.prev);
-
-      setIsLoading(false);
-    } catch (err: any) {
-      setError(err.message);
-      setIsLoading(false);
+    if (isObjectEmpty(filterResponseObject)) {
+      onInitialMount();
+    } else {
+      setPage(0);
+      fetchDogData();
     }
-  };
+  }, [filterResponseObject, initialPageLoadSort]);
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -252,7 +201,7 @@ export default function DogTableResult({
   ) => {
     if (property !== "breed") return;
     event.preventDefault();
-    if (initialRender) {
+    if (isObjectEmpty(filterResponseObject)) {
       initialPageLoadSort === "asc"
         ? dispatch(setInitialPageLoadSort("desc"))
         : dispatch(setInitialPageLoadSort("asc"));
@@ -288,12 +237,11 @@ export default function DogTableResult({
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
     console.log(event);
-    setInitialRender(false);
 
     if (newPage > page && nextUrl) {
       fetchNextData(nextUrl);
     } else if (newPage < page && prevUrl) {
-      fetchNextData(prevUrl);
+      fetchPrevData(prevUrl);
       console.log(prevUrl + "calling prev end point");
     } else {
       console.log("Check the newPage ore event");
@@ -310,11 +258,12 @@ export default function DogTableResult({
 
   const matchMyFavDogs = () => {
     dispatch(setFavoriteIDs(selected));
-    dispatch(clearMatchDogData());
-    dispatch(setAIGneratedActivities({}));
+
     navigate("/favoritedogs");
   };
 
+  // console.log(tablesData);
+  // debugger;
   return (
     <>
       <Box sx={{ width: "100%", mt: 4 }}>

@@ -6,6 +6,8 @@ import matchLocationReducer from "./slices/matchLocationSlice";
 import filterValuesReducer from "./slices/filterValuesSlice";
 import aiGeneratedActivitesReducer from "./slices/aiGeneratedActivitesSlice";
 import sortingStrategyReducer from "./slices/sortingStrategySlice";
+import filterResponseObjectReducer from "./slices/filterResponseObjectSlice";
+import tableDataPropsReducer from "./slices/tableDataPropsSlice";
 
 export const rootReducer = combineReducers({
   breeds: breedsReducer,
@@ -15,4 +17,6 @@ export const rootReducer = combineReducers({
   filterValueData: filterValuesReducer,
   aIGeneratedActivies: aiGeneratedActivitesReducer,
   sortingStrategy: sortingStrategyReducer,
+  filterResponseObject: filterResponseObjectReducer,
+  tableDataProps: tableDataPropsReducer,
 });
