@@ -30,6 +30,7 @@ import { selectTabelDataProps } from "../redux/slices/tableDataPropsSlice";
 import { useFetchInitialMountDogData } from "./custom-hooks/useFechInitialMountDogData";
 import { useFetchPrevData } from "./custom-hooks/useFetchPrevData";
 import { useFetchNextData } from "./custom-hooks/useFetchNextData";
+import { selectPageState, setPage } from "../redux/slices/tableStateSlice";
 
 interface Dog {
   id: string;
@@ -162,7 +163,7 @@ export default function DogTableResult() {
   /**useState hooks */
 
   const [selected, setSelected] = useState<string[]>([]);
-  const [page, setPage] = useState(0);
+  // const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(20);
   // const [isLoading, setIsLoading] = useState(false);
   // const [error, setError] = useState(null);
@@ -172,7 +173,7 @@ export default function DogTableResult() {
   const { sortingStrategy, initialPageLoadSort } = useAppSelector(
     selectSortingStrategy
   );
-
+  const { page } = useAppSelector(selectPageState);
   const { nextUrl, prevUrl, tablesData } = useAppSelector(selectTabelDataProps);
 
   const { filterResponseObject } = useAppSelector(selectFilterResponseObject);
@@ -188,7 +189,6 @@ export default function DogTableResult() {
     if (isObjectEmpty(filterResponseObject)) {
       onInitialMount();
     } else {
-      // setPage(0);
       fetchDogData();
     }
   }, [filterResponseObject, initialPageLoadSort]);
@@ -233,7 +233,7 @@ export default function DogTableResult() {
   };
 
   const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage);
+    dispatch(setPage(newPage));
     console.log(event);
 
     if (newPage > page && nextUrl) {
