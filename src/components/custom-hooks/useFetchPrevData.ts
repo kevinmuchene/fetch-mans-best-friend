@@ -9,7 +9,6 @@ import {
 
 export const useFetchPrevData = () => {
   const dispatch = useAppDispatch();
-  const { nextUrl } = useAppSelector(selectTabelDataProps);
 
   const fetchPrevData = async (url: string) => {
     try {
@@ -17,8 +16,6 @@ export const useFetchPrevData = () => {
 
       const newDogsData = await DogAction.fetchDogs(nextPageResponse.resultIds);
 
-      console.log(nextUrl);
-      console.log(nextPageResponse.next);
       dispatch(setTablesData(newDogsData));
 
       dispatch(setNextUrl(nextPageResponse.next));

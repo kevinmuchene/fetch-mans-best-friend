@@ -15,8 +15,6 @@ export const useFetchNextData = () => {
       const nextPageResponse = await DogAction.fetchNextPageData(url);
 
       const newDogsData = await DogAction.fetchDogs(nextPageResponse.resultIds);
-      console.log(newDogsData);
-      console.log(nextPageResponse.next);
       dispatch(setTablesData(newDogsData));
 
       dispatch(setNextUrl(nextPageResponse.next));
