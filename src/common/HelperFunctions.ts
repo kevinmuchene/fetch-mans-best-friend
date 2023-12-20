@@ -27,3 +27,11 @@ export function createUrl(
     validZipCodes.length ? `&zipCodes=${validZipCodes.join(",")}` : ""
   }${dogBreedsString ? `&${dogBreedsString}` : ""}&size=20&sort=breed:${sort}`;
 }
+
+export const isObjectEmpty = (obj: {}) =>
+  Object.values(obj).every(
+    (value) =>
+      (Array.isArray(value) && value.length === 0) ||
+      (typeof value === "string" && value === "") ||
+      (typeof value === "number" && value === 0)
+  );
