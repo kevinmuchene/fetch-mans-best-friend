@@ -23,8 +23,6 @@ export const useFetchDogData = () => {
       dispatch(
         setPrevUrl(filterResponseObject.prev ? filterResponseObject.prev : "")
       );
-    } else {
-      console.log("Nothing to do");
     }
   };
 
