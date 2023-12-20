@@ -1,11 +1,8 @@
 import DogAction from "../../Actions/DogAction";
 import { useAppDispatch, useAppSelector } from "../../redux/Hooks";
+import { setFilterResponseObject } from "../../redux/slices/filterResponseObjectSlice";
 import { selectSortingStrategy } from "../../redux/slices/sortingStrategySlice";
-import {
-  setNextUrl,
-  setPaginationCount,
-  setTablesData,
-} from "../../redux/slices/tableDataPropsSlice";
+import { setNextUrl } from "../../redux/slices/tableDataPropsSlice";
 
 export const useFetchInitialMountDogData = () => {
   const dispatch = useAppDispatch();
@@ -15,14 +12,9 @@ export const useFetchInitialMountDogData = () => {
   const onInitialMount = async () => {
     try {
       const allDogsResponse = await DogAction.fetchAllDogs(initialPageLoadSort);
-      dispatch(setPaginationCount(allDogsResponse.total));
+
+      dispatch(setFilterResponseObject(allDogsResponse));
       dispatch(setNextUrl(allDogsResponse.next));
-
-      const dogDetailsResponse = await DogAction.fetchDogs(
-        allDogsResponse.resultIds
-      );
-
-      dispatch(setTablesData(dogDetailsResponse));
     } catch (error) {
       console.error("Error fetching dog data:", error);
     }
