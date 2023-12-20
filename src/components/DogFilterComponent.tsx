@@ -24,6 +24,7 @@ import {
 import { selectSortingStrategy } from "../redux/slices/sortingStrategySlice";
 import DogAction from "../Actions/DogAction";
 import { setFilterResponseObject } from "../redux/slices/filterResponseObjectSlice";
+import { setPage } from "../redux/slices/tableStateSlice";
 
 const isObjectEmpty = (obj: {}) =>
   Object.values(obj).every(
@@ -94,6 +95,7 @@ function DogFilterComponent() {
     dogAction
       .searchDogs(url)
       .then((res) => {
+        disptach(setPage(0));
         disptach(setFilterResponseObject(res));
       })
       .catch((err) => {
