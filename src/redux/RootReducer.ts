@@ -8,6 +8,7 @@ import aiGeneratedActivitesReducer from "./slices/aiGeneratedActivitesSlice";
 import sortingStrategyReducer from "./slices/sortingStrategySlice";
 import filterResponseObjectReducer from "./slices/filterResponseObjectSlice";
 import tableDataPropsReducer from "./slices/tableDataPropsSlice";
+import tableStateSlice from "./slices/tableStateSlice";
 
 export const rootReducer = combineReducers({
   breeds: breedsReducer,
@@ -19,4 +20,5 @@ export const rootReducer = combineReducers({
   sortingStrategy: sortingStrategyReducer,
   filterResponseObject: filterResponseObjectReducer,
   tableDataProps: tableDataPropsReducer,
+  tableState: tableStateSlice,
 });
