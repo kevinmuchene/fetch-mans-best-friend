@@ -1,11 +1,8 @@
 import DogAction from "../../Actions/DogAction";
 import { useAppDispatch } from "../../redux/Hooks";
+import { setFilterResponseObject } from "../../redux/slices/filterResponseObjectSlice";
 
-import {
-  setNextUrl,
-  setPrevUrl,
-  setTablesData,
-} from "../../redux/slices/tableDataPropsSlice";
+import { setNextUrl, setPrevUrl } from "../../redux/slices/tableDataPropsSlice";
 
 export const useFetchNextData = () => {
   const dispatch = useAppDispatch();
@@ -14,8 +11,7 @@ export const useFetchNextData = () => {
     try {
       const nextPageResponse = await DogAction.fetchNextPageData(url);
 
-      const newDogsData = await DogAction.fetchDogs(nextPageResponse.resultIds);
-      dispatch(setTablesData(newDogsData));
+      dispatch(setFilterResponseObject(nextPageResponse));
 
       dispatch(setNextUrl(nextPageResponse.next));
       dispatch(setPrevUrl(nextPageResponse.prev));
