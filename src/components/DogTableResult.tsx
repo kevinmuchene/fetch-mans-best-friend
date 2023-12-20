@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { alpha } from "@mui/material/styles";
-import { Alert, Avatar, Box, Button } from "@mui/material";
+import { Avatar, Box, Button } from "@mui/material";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -164,8 +164,8 @@ export default function DogTableResult() {
   const [selected, setSelected] = useState<string[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(20);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  // const [isLoading, setIsLoading] = useState(false);
+  // const [error, setError] = useState(null);
 
   const dispatch = useAppDispatch();
 
@@ -348,8 +348,8 @@ export default function DogTableResult() {
             onRowsPerPageChange={handleChangeRowsPerPage}
           />
 
-          {isLoading && <Alert severity="info">Loading Next Data</Alert>}
-          {error && <Alert severity="info">Error Loading Next Data</Alert>}
+          {/* {isLoading && <Alert severity="info">Loading Next Data</Alert>}
+          {error && <Alert severity="info">Error Loading Next Data</Alert>} */}
         </Paper>
       </Box>
     </>

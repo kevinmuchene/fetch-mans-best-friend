@@ -1,7 +1,6 @@
 import DogAction from "../../Actions/DogAction";
-import { useAppDispatch, useAppSelector } from "../../redux/Hooks";
+import { useAppDispatch } from "../../redux/Hooks";
 import {
-  selectTabelDataProps,
   setNextUrl,
   setPrevUrl,
   setTablesData,
