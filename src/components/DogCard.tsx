@@ -22,7 +22,11 @@ const StyledTypography = styled(Typography)(() => ({
   display: "inline-block",
 }));
 
-export default function DogCard({ zipcode }: { zipcode: string[] }) {
+interface DogCardProps {
+  zipcode: string[];
+}
+
+export default function DogCard({ zipcode }: DogCardProps) {
   const [open, setOpen] = useState<boolean>(false);
   const { matchDog } = useAppSelector(selectMatchDog);
   const { locationData } = useAppSelector(selectMatchLocation);
@@ -55,7 +59,7 @@ export default function DogCard({ zipcode }: { zipcode: string[] }) {
       <Box display={"flex"} justifyContent={"center"} sx={{ my: 3 }}>
         <Card>
           <CardMedia
-            sx={{ height: 240 }}
+            sx={{ height: 440 }}
             image={matchDog[0].img}
             title={matchDog[0].name}
           />
