@@ -173,11 +173,9 @@ export default function DogTableResult() {
     selectSortingStrategy
   );
 
-  const { nextUrl, prevUrl, tablesData, tablePaginationCount } =
-    useAppSelector(selectTabelDataProps);
+  const { nextUrl, prevUrl, tablesData } = useAppSelector(selectTabelDataProps);
 
   const { filterResponseObject } = useAppSelector(selectFilterResponseObject);
-
   const { fetchDogData } = useFetchDogData();
   const { onInitialMount } = useFetchInitialMountDogData();
   const { fetchPrevData } = useFetchPrevData();
@@ -190,7 +188,7 @@ export default function DogTableResult() {
     if (isObjectEmpty(filterResponseObject)) {
       onInitialMount();
     } else {
-      setPage(0);
+      // setPage(0);
       fetchDogData();
     }
   }, [filterResponseObject, initialPageLoadSort]);
@@ -262,8 +260,6 @@ export default function DogTableResult() {
     navigate("/favoritedogs");
   };
 
-  // console.log(tablesData);
-  // debugger;
   return (
     <>
       <Box sx={{ width: "100%", mt: 4 }}>
@@ -341,7 +337,7 @@ export default function DogTableResult() {
           <TablePagination
             rowsPerPageOptions={[20]}
             component="div"
-            count={tablePaginationCount}
+            count={filterResponseObject.total}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
