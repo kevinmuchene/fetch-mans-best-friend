@@ -1,8 +1,3 @@
-// const [nextUrl, setNextUrl] = useState<string | null>("");
-//   const [prevUrl, setPrevUrl] = useState<string | null>("");
-//   const [tablePaginationCount, setTablePaginationCount] = useState<number>(0);
-//   const [tablesData, setTablesData] = useState<Dog[]>([]);
-
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { RootState } from "../Store";
@@ -18,7 +13,7 @@ export interface Dog {
 
 type TablePropsType = {
   nextUrl: string;
-  prevUrl: string;
+  prevUrl?: string;
   tablePaginationCount: number;
   tablesData: Dog[];
 };
@@ -40,16 +35,14 @@ export const tabelDataPropsSlice = createSlice({
     setPrevUrl: (state, action: PayloadAction<string>) => {
       state.prevUrl = action.payload;
     },
-    setPaginationCount: (state, action: PayloadAction<number>) => {
-      state.tablePaginationCount = action.payload;
-    },
+
     setTablesData: (state, action: PayloadAction<Dog[]>) => {
       state.tablesData = action.payload;
     },
   },
 });
 
-export const { setNextUrl, setPrevUrl, setPaginationCount, setTablesData } =
+export const { setNextUrl, setPrevUrl, setTablesData } =
   tabelDataPropsSlice.actions;
 
 export const selectTabelDataProps = (state: RootState) => state.tableDataProps;
