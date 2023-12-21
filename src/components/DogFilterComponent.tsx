@@ -1,5 +1,13 @@
 import { useEffect } from "react";
-import { TextField, Button, Box, Grid, Typography, Paper } from "@mui/material";
+import {
+  TextField,
+  Button,
+  Box,
+  Grid,
+  Typography,
+  Paper,
+  Alert,
+} from "@mui/material";
 import { useFormik } from "formik";
 import SelectBreedComponent from "./MultiSelectComponent";
 import * as Yup from "yup";
@@ -7,14 +15,13 @@ import { CustomErrorDiv, ageValidationSchema } from "../common/YupValidation";
 import { createUrl, processZipCodes } from "../common/HelperFunctions";
 import { TypeIntialValues } from "../common/Interfaces";
 import { useAppDispatch, useAppSelector } from "../redux/Hooks";
-import { selectBreeds } from "../redux/slices/breedDataSlice";
 import {
   selectFilterValues,
   setFilterValuesData,
 } from "../redux/slices/filterValuesSlice";
 import { selectSortingStrategy } from "../redux/slices/sortingStrategySlice";
-import { useFetchBreeds } from "./custom-hooks/useFetchBreeds";
 import { useSearchDogs } from "./custom-hooks/useSearchDogs";
+import { useBreeds } from "../services/Queries";
 
 let initialValues: TypeIntialValues = {
   breeds: [],
@@ -24,17 +31,28 @@ let initialValues: TypeIntialValues = {
 };
 
 function DogFilterComponent() {
-  const { breed } = useAppSelector(selectBreeds);
   const disptach = useAppDispatch();
   const { filterValues } = useAppSelector(selectFilterValues);
   const { sortingStrategy } = useAppSelector(selectSortingStrategy);
 
-  const { fetchDogBreeds } = useFetchBreeds();
   const { searchDogs } = useSearchDogs();
 
-  useEffect(() => {
-    fetchDogBreeds();
-  }, []);
+  const breedsQuery = useBreeds();
+
+  if (breedsQuery.isPending) {
+    return (
+      <Alert variant="filled" color="info">
+        Fetching Breeds
+      </Alert>
+    );
+  }
+  if (breedsQuery.isError) {
+    return (
+      <Alert variant="filled" color="error">
+        Breeds Cannot Be Fetch. Try Again!
+      </Alert>
+    );
+  }
 
   const formik = useFormik({
     initialValues: initialValues,
@@ -98,7 +116,7 @@ function DogFilterComponent() {
               setSelectedItems={(field: string, value: any) =>
                 formik.setFieldValue(field, value)
               }
-              dropDownItems={breed}
+              dropDownItems={breedsQuery.data}
               label={"Breed"}
             />
           </Grid>
