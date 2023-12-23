@@ -3,6 +3,7 @@ import DogAction from "../Actions/DogAction";
 import { useAppDispatch, useAppSelector } from "../redux/Hooks";
 import { selectFilterResponseObject } from "../redux/slices/filterResponseObjectSlice";
 import { setNextUrl, setPrevUrl } from "../redux/slices/tableDataPropsSlice";
+import { useEffect } from "react";
 
 export interface Dog {
   id: string;
@@ -23,10 +24,13 @@ export function useBreeds() {
 export function useFetchDogData() {
   const { filterResponseObject } = useAppSelector(selectFilterResponseObject);
   const dispatch = useAppDispatch();
-  dispatch(setNextUrl(filterResponseObject.next));
-  dispatch(
-    setPrevUrl(filterResponseObject.prev ? filterResponseObject.prev : "")
-  );
+
+  useEffect(() => {
+    dispatch(setNextUrl(filterResponseObject.next));
+    dispatch(
+      setPrevUrl(filterResponseObject.prev ? filterResponseObject.prev : "")
+    );
+  }, [filterResponseObject.next, filterResponseObject.prev]);
 
   return useQuery<Dog[]>({
     queryKey: ["dogData"],
