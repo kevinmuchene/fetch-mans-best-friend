@@ -8,34 +8,26 @@ import {
   Paper,
   Alert,
 } from "@mui/material";
-import { useFormik } from "formik";
+
 import SelectBreedComponent from "./MultiSelectComponent";
-import * as Yup from "yup";
-import { CustomErrorDiv, ageValidationSchema } from "../common/YupValidation";
-import { createUrl, processZipCodes } from "../common/HelperFunctions";
-import { TypeIntialValues } from "../common/Interfaces";
-import { useAppDispatch, useAppSelector } from "../redux/Hooks";
-import {
-  selectFilterValues,
-  setFilterValuesData,
-} from "../redux/slices/filterValuesSlice";
+import { CustomErrorDiv } from "../common/YupValidation";
+import { createUrl } from "../common/HelperFunctions";
+import { useAppSelector } from "../redux/Hooks";
 import { selectSortingStrategy } from "../redux/slices/sortingStrategySlice";
 import { useSearchDogs } from "./custom-hooks/useSearchDogs";
 import { useBreeds } from "../services/Queries";
-
-let initialValues: TypeIntialValues = {
-  breeds: [],
-  zipCodes: "",
-  ageMin: "",
-  ageMax: "",
-};
+import { useFormikFom } from "../FormikHandleForm/formikform";
 
 function DogFilterComponent() {
-  const disptach = useAppDispatch();
-  const { filterValues } = useAppSelector(selectFilterValues);
   const { sortingStrategy } = useAppSelector(selectSortingStrategy);
 
   const { searchDogs } = useSearchDogs();
+
+  const { formik } = useFormikFom();
+
+  useEffect(() => {
+    searchDogs(createUrl([], "", "", [], sortingStrategy));
+  }, []);
 
   const breedsQuery = useBreeds();
 
@@ -53,48 +45,6 @@ function DogFilterComponent() {
       </Alert>
     );
   }
-
-  const formik = useFormik({
-    initialValues: initialValues,
-    validationSchema: Yup.object(ageValidationSchema),
-    onSubmit: (values, { resetForm }) => {
-      const validZipCodes = processZipCodes(values.zipCodes);
-
-      let filterValues = {
-        breeds: values.breeds,
-        ageMin: values.ageMin,
-        ageMax: values.ageMax,
-        validZipCodes,
-      };
-
-      let url = createUrl(
-        values.breeds,
-        values.ageMin,
-        values.ageMax,
-        validZipCodes,
-        sortingStrategy
-      );
-      disptach(setFilterValuesData(filterValues));
-      handleSubmit(url);
-      resetForm();
-    },
-  });
-
-  const handleSubmit = (url: string) => {
-    searchDogs(url);
-  };
-
-  useEffect(() => {
-    let url = createUrl(
-      filterValues.breeds,
-      filterValues.ageMin,
-      filterValues.ageMax,
-      filterValues.validZipCodes,
-      sortingStrategy
-    );
-
-    handleSubmit(url);
-  }, [sortingStrategy]);
 
   return (
     <Paper sx={{ width: "100%", mb: 2 }}>
