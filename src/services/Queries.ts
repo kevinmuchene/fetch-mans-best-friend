@@ -4,6 +4,8 @@ import { useAppDispatch, useAppSelector } from "../redux/Hooks";
 import { selectFilterResponseObject } from "../redux/slices/filterResponseObjectSlice";
 import { setNextUrl, setPrevUrl } from "../redux/slices/tableDataPropsSlice";
 import { useEffect } from "react";
+import LocationAction from "../Actions/LocationAction";
+import { LocationType } from "../common/Interfaces";
 
 export interface Dog {
   id: string;
@@ -35,5 +37,12 @@ export function useFetchDogData() {
   return useQuery<Dog[]>({
     queryKey: ["dogData"],
     queryFn: () => DogAction.fetchDogs(filterResponseObject.resultIds),
+  });
+}
+
+export function useFetchLocationByZip(zipcode: string[]) {
+  return useQuery<LocationType[]>({
+    queryKey: ["location"],
+    queryFn: () => LocationAction.fetchLocationByZip(zipcode),
   });
 }
