@@ -1,82 +1,50 @@
 import { useEffect } from "react";
-import { TextField, Button, Box, Grid, Typography, Paper } from "@mui/material";
-import { useFormik } from "formik";
-import SelectBreedComponent from "./MultiSelectComponent";
-import * as Yup from "yup";
-import { CustomErrorDiv, ageValidationSchema } from "../common/YupValidation";
-import { createUrl, processZipCodes } from "../common/HelperFunctions";
-import { TypeIntialValues } from "../common/Interfaces";
-import { useAppDispatch, useAppSelector } from "../redux/Hooks";
-import { selectBreeds } from "../redux/slices/breedDataSlice";
 import {
-  selectFilterValues,
-  setFilterValuesData,
-} from "../redux/slices/filterValuesSlice";
-import { selectSortingStrategy } from "../redux/slices/sortingStrategySlice";
-import { useFetchBreeds } from "./custom-hooks/useFetchBreeds";
-import { useSearchDogs } from "./custom-hooks/useSearchDogs";
+  TextField,
+  Button,
+  Box,
+  Grid,
+  Typography,
+  Paper,
+  Alert,
+} from "@mui/material";
 
-let initialValues: TypeIntialValues = {
-  breeds: [],
-  zipCodes: "",
-  ageMin: "",
-  ageMax: "",
-};
+import SelectBreedComponent from "./MultiSelectComponent";
+import { CustomErrorDiv } from "../common/YupValidation";
+import { createUrl } from "../common/HelperFunctions";
+import { useAppSelector } from "../redux/Hooks";
+import { selectSortingStrategy } from "../redux/slices/sortingStrategySlice";
+import { useSearchDogs } from "./custom-hooks/useSearchDogs";
+import { useBreeds } from "../services/Queries";
+import { useFormikFom } from "../FormikHandleForm/formikform";
 
 function DogFilterComponent() {
-  const { breed } = useAppSelector(selectBreeds);
-  const disptach = useAppDispatch();
-  const { filterValues } = useAppSelector(selectFilterValues);
   const { sortingStrategy } = useAppSelector(selectSortingStrategy);
 
-  const { fetchDogBreeds } = useFetchBreeds();
   const { searchDogs } = useSearchDogs();
 
+  const { formik } = useFormikFom();
+
   useEffect(() => {
-    fetchDogBreeds();
+    searchDogs(createUrl([], "", "", [], sortingStrategy));
   }, []);
 
-  const formik = useFormik({
-    initialValues: initialValues,
-    validationSchema: Yup.object(ageValidationSchema),
-    onSubmit: (values, { resetForm }) => {
-      const validZipCodes = processZipCodes(values.zipCodes);
+  const breedsQuery = useBreeds();
 
-      let filterValues = {
-        breeds: values.breeds,
-        ageMin: values.ageMin,
-        ageMax: values.ageMax,
-        validZipCodes,
-      };
-
-      let url = createUrl(
-        values.breeds,
-        values.ageMin,
-        values.ageMax,
-        validZipCodes,
-        sortingStrategy
-      );
-      disptach(setFilterValuesData(filterValues));
-      handleSubmit(url);
-      resetForm();
-    },
-  });
-
-  const handleSubmit = (url: string) => {
-    searchDogs(url);
-  };
-
-  useEffect(() => {
-    let url = createUrl(
-      filterValues.breeds,
-      filterValues.ageMin,
-      filterValues.ageMax,
-      filterValues.validZipCodes,
-      sortingStrategy
+  if (breedsQuery.isPending) {
+    return (
+      <Alert variant="filled" color="info">
+        Fetching Breeds
+      </Alert>
     );
-
-    handleSubmit(url);
-  }, [sortingStrategy]);
+  }
+  if (breedsQuery.isError) {
+    return (
+      <Alert variant="filled" color="error">
+        Breeds Cannot Be Fetch. Try Again!
+      </Alert>
+    );
+  }
 
   return (
     <Paper sx={{ width: "100%", mb: 2 }}>
@@ -98,7 +66,7 @@ function DogFilterComponent() {
               setSelectedItems={(field: string, value: any) =>
                 formik.setFieldValue(field, value)
               }
-              dropDownItems={breed}
+              dropDownItems={breedsQuery.data}
               label={"Breed"}
             />
           </Grid>
