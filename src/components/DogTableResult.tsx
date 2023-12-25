@@ -23,11 +23,15 @@ import {
   setSortingStrategy,
 } from "../redux/slices/sortingStrategySlice";
 import { selectFilterResponseObject } from "../redux/slices/filterResponseObjectSlice";
-import { useFetchDogData } from "./custom-hooks/useFetchDogData";
+
 import { selectTabelDataProps } from "../redux/slices/tableDataPropsSlice";
 import { useFetchPrevData } from "./custom-hooks/useFetchPrevData";
 import { useFetchNextData } from "./custom-hooks/useFetchNextData";
 import { selectPageState, setPage } from "../redux/slices/tableStateSlice";
+import { selectFilterValues } from "../redux/slices/filterValuesSlice";
+import { createUrl } from "../common/HelperFunctions";
+import { useSearchDogs } from "./custom-hooks/useSearchDogs";
+import { useFetchDogData } from "../services/Queries";
 
 interface Dog {
   id: string;
@@ -166,24 +170,47 @@ export default function DogTableResult() {
 
   const { sortingStrategy } = useAppSelector(selectSortingStrategy);
   const { page } = useAppSelector(selectPageState);
-  const { nextUrl, prevUrl, tablesData } = useAppSelector(selectTabelDataProps);
-
+  const { nextUrl, prevUrl } = useAppSelector(selectTabelDataProps);
+  const { filterValues } = useAppSelector(selectFilterValues);
+  const { searchDogs } = useSearchDogs();
   const { filterResponseObject } = useAppSelector(selectFilterResponseObject);
-  const { fetchDogData } = useFetchDogData();
+
   const { fetchPrevData } = useFetchPrevData();
   const { fetchNextData } = useFetchNextData();
+
+  const dogData = useFetchDogData();
 
   /**router dom hooks */
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchDogData();
+    dogData.refetch();
   }, [filterResponseObject]);
+
+  if (dogData.isPending) {
+    return <p>Loadding...</p>;
+  }
+
+  if (dogData.isError) {
+    return <p>Oops! Trying again</p>;
+  }
+
+  function currentUrl(sortUrl: string) {
+    return createUrl(
+      filterValues.breeds,
+      filterValues.ageMin,
+      filterValues.ageMax,
+      filterValues.validZipCodes,
+      sortUrl
+    );
+  }
 
   function sortStrategy() {
     if (sortingStrategy === "asc") {
+      searchDogs(currentUrl("desc"));
       dispatch(setSortingStrategy("desc"));
     } else {
+      searchDogs(currentUrl("asc"));
       dispatch(setSortingStrategy("asc"));
     }
   }
@@ -263,10 +290,10 @@ export default function DogTableResult() {
               <EnhancedTableHead
                 numSelected={selected.length}
                 onRequestSort={handleRequestSort}
-                rowCount={tablesData.length}
+                rowCount={dogData.data.length}
               />
               <TableBody>
-                {tablesData.map((dog, index) => {
+                {dogData.data.map((dog, index) => {
                   const isItemSelected = isSelected(dog.id);
                   const labelId = `enhanced-table-checkbox-${index}`;
 

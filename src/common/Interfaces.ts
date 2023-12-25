@@ -6,7 +6,7 @@ export interface Dog {
   breed: string;
 }
 
-export interface Location {
+export interface LocationType {
   city: string;
   county: string;
   latitude: string;

@@ -8,7 +8,6 @@ import {
   selectMatchDog,
 } from "../redux/slices/matchDogSlice";
 import { setAIGneratedActivities } from "../redux/slices/aiGeneratedActivitesSlice";
-import { setMatchLocationData } from "../redux/slices/matchLocationSlice";
 import { useMatchDogData } from "./custom-hooks/useMatchDogData";
 
 function FavDogsComponent() {
@@ -21,7 +20,6 @@ function FavDogsComponent() {
   const handleBackButtonActivities = () => {
     dispatch(clearMatchDogData());
     dispatch(setAIGneratedActivities({}));
-    dispatch(setMatchLocationData([]));
     dispatch(clearFavoriteIDs());
     navigate("/dogs");
   };
@@ -56,7 +54,9 @@ function FavDogsComponent() {
               Search and Filter Again to see your match
             </Alert>
           )}
-          {matchDogData.matchDog.length > 0 && <DogCard zipcode={zipcode} />}
+          {matchDogData.matchDog.length > 0 && zipcode.length > 0 && (
+            <DogCard zipcode={zipcode} />
+          )}
         </Grid>
       </Grid>
     </Container>
