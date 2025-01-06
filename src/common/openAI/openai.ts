@@ -1,6 +1,6 @@
 export const openAIBreedSuggestionFunction = (input: string) => {
   return {
-    model: "gpt-3.5-turbo-16k",
+    model: "gpt-40-2024-11-20",
     messages: [
       {
         role: "user",
